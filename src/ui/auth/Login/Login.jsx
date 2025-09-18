@@ -120,7 +120,7 @@ const Login = () => {
         </h1>
 
         {/* Wave Background */}
-        <div className="absolute bottom-0 left-0 right-0 z-0">
+        <div className="fixed bottom-0 left-0 right-0 z-0">
           <svg
             className="w-full h-32 sm:h-48 md:h-56 lg:h-80"
             xmlns="http://www.w3.org/2000/svg"
