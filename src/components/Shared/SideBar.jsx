@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Bars3Icon, ChevronDownIcon } from '@heroicons/react/24/outline';
 import jwtUtils from '../../utilities/jwtUtils';
 import { logout } from '../../js/logout';
+import logo from '../../assets/img/logo.jpg';
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -20,20 +21,6 @@ const Sidebar = () => {
   };
 
   const menus = {
-    superadmin: [
-      {
-        section: 'Home',
-        link: '/superadmin',
-      },
-      {
-        section: 'Clientes',
-        link: '/superadmin/clientes',
-      },      
-      {
-        section: 'Empleados',
-        link: '/superadmin/empleados',
-      },
-    ],
     admin: [
       {
         section: 'Dashboard',
@@ -54,71 +41,37 @@ const Sidebar = () => {
         ],
       },
     ],
-    cliente: [
+    usuario: [
       {
-        section: 'Home',
-        link: '/cliente',
+        section: 'Mapa',
+        link: '/usuario',
       },
       {
         section: 'Solicitud Préstamos',
         subs: [
-          { name: 'Solicitar', link: '/cliente/solicitar-prestamo' },
-          { name: 'Mis Solicitudes', link: '/cliente/mis-solicitudes' },
+          { name: 'Solicitar', link: '/usuario/solicitar-prestamo' },
+          { name: 'Mis Solicitudes', link: '/usuario/mis-solicitudes' },
         ],
       },
       {
         section: 'Support',
-        link: '/cliente/support',
+        link: '/usuario/support',
       },
     ],
-    asesor: [
+    recolector: [
       {
         section: 'Dashboard',
-        link: '/asesor/dashboard',
+        link: '/recolector/dashboard',
       },
       {
         section: 'Reports',
-        link: '/asesor/reports',
+        link: '/recolector/reports',
       },
       {
         section: 'Teams',
         subs: [
-          { name: 'Team List', link: '/encargado/teams/list' },
-          { name: 'Assign Tasks', link: '/encargado/teams/tasks' },
-        ],
-      },
-    ],
-    auditor: [
-      {
-        section: 'Dashboard',
-        link: '/auditor/dashboard',
-      },
-      {
-        section: 'Reports',
-        link: '/auditor/reports',
-      },
-      {
-        section: 'Teams',
-        subs: [
-          { name: 'Team List', link: '/encargado/teams/list' },
-          { name: 'Assign Tasks', link: '/encargado/teams/tasks' },
-        ],
-      },
-    ],
-    cajero: [
-      {
-        section: 'Dashboard',
-        link: '/cajero/dashboard',
-      },
-      {
-        section: 'Reports',
-        link: '/cajero/reports',
-      },
-      {
-        section: 'Teams',
-        subs: [
-          { name: 'Team List', link: '/encargado/teams/list' },
-          { name: 'Assign Tasks', link: '/encargado/teams/tasks' },
+          { name: 'Team List', link: '/recolector/teams/list' },
+          { name: 'Assign Tasks', link: '/recolector/teams/tasks' },
         ],
       },
     ],
@@ -149,9 +102,9 @@ const Sidebar = () => {
         {/* Top half: White with image */}
         <div className="h-1/4 bg-white flex items-center justify-center">
           <img
-            src=""
+            src={logo}
             alt="Logo"
-            className="h-60 w-auto"
+            className="h-40 w-auto"
           />
         </div>
 
