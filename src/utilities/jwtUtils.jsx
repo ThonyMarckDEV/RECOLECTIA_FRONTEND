@@ -31,6 +31,8 @@ export const getEmail= (token) => jwtDecode(token)?.email ?? null;
 // Función para obtener el rol del usuario
 export const getUserID = (token) => jwtDecode(token)?.sub ?? null;
 
+// Función para obtener el perfil del usuario
+export const getUserProfile = (token) => jwtDecode(token)?.perfil ?? null;
 
 // // Función para verificar si el token está expirado
 export const isTokenExpired = (token) => {
@@ -149,5 +151,6 @@ export default {
   getRefreshTokenFromCookie,
   setAccessTokenInCookie,
   getUserID,
-  getRefreshTokenIDFromCookie
+  getRefreshTokenIDFromCookie,
+  getUserProfile
 };

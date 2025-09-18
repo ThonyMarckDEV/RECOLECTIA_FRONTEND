@@ -25,8 +25,8 @@ const truckIcon = new L.Icon({
   shadowSize: [41, 41],
 });
 
-// User icon (default Leaflet icon for user location)
-const userIcon = new L.Icon({
+// Default user icon
+const defaultUserIcon = new L.Icon({
   iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
   iconSize: [25, 41],
   iconAnchor: [12, 41],
@@ -34,6 +34,27 @@ const userIcon = new L.Icon({
   shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
   shadowSize: [41, 41],
 });
+
+// Function to create a circular icon from a URL
+const createCircularIcon = (url) => {
+  return new L.divIcon({
+    className: 'custom-icon',
+    html: `
+      <div style="
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 2px solid #fff;
+        box-shadow: 0 0 5px rgba(0,0,0,0.3);
+        background: url(${url}) center/cover no-repeat;
+      "></div>
+    `,
+    iconSize: [40, 40],
+    iconAnchor: [20, 40],
+    popupAnchor: [0, -40],
+  });
+};
 
 const UpdateMapBounds = ({ userPosition, collectorPosition, role }) => {
   const map = useMap();
@@ -71,6 +92,7 @@ const Home = () => {
   const [error, setError] = useState(null);
   const [userName, setUserName] = useState('');
   const [role, setRole] = useState('');
+  const [userProfilePic, setUserProfilePic] = useState(null); // Profile picture URL
   const positionRef = useRef(null);
   const lastUpdateRef = useRef(0);
   const audioRef = useRef(new Audio(alertSound));
@@ -80,8 +102,10 @@ const Home = () => {
     const token = jwtUtils.getAccessTokenFromCookie();
     const nombre = jwtUtils.getFullName(token);
     const rol = jwtUtils.getUserRole(token);
+    const perfil = jwtUtils.getUserProfile(token) || null; // Extract perfil from token
     setUserName(nombre || 'Usuario');
     setRole(rol);
+    setUserProfilePic(perfil);
   }, []);
 
   // Watch user's position
@@ -168,6 +192,9 @@ const Home = () => {
     };
   }, [role]);
 
+  // Create user icon based on profile picture
+  const userIconInstance = userProfilePic ? createCircularIcon(userProfilePic) : defaultUserIcon;
+
   return (
     <div className="min-h-screen w-full bg-gray-100 flex flex-col items-center">
       <div className="w-full bg-white border-4 border-white">
@@ -196,12 +223,12 @@ const Home = () => {
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
               />
               {role === 'recolector' ? (
-                <Marker position={position} icon={truckIcon}>
+                <Marker position={position} icon={userProfilePic ? createCircularIcon(userProfilePic) : truckIcon}>
                   <Popup>Tu ubicación actual</Popup>
                 </Marker>
               ) : (
                 <>
-                  <Marker position={position} icon={userIcon}>
+                  <Marker position={position} icon={userIconInstance}>
                     <Popup>Tu ubicación actual</Popup>
                   </Marker>
                   {collectorPosition && (
