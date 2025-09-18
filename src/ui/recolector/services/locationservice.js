@@ -2,7 +2,7 @@ import { fetchWithAuth } from '../../../js/authToken';
 import API_BASE_URL from '../../../js/urlHelper';
 
 const updateLocation = async (latitude, longitude) => {
-  const response = await fetchWithAuth(`${API_BASE_URL}/api/locacions/update`, {
+  const response = await fetchWithAuth(`${API_BASE_URL}/api/locations/update`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
