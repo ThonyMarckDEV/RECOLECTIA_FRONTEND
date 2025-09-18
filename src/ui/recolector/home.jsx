@@ -79,9 +79,9 @@ const Home = () => {
         setPosition(newPosition);
         setError(null);
 
-        // Throttle updates to backend (every 5 seconds)
+        // Throttle updates to backend (every 10 seconds)
         const now = Date.now();
-        if (rol === 'recolector' && now - lastUpdate > 5000) {
+        if (rol === 'recolector' && now - lastUpdate > 10000) {
           try {
             await locationservice.updateLocation(latitude, longitude);
             setLastUpdate(now);
