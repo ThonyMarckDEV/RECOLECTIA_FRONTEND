@@ -26,6 +26,7 @@ import HomeUsuario from './ui/usuario/home.jsx';
 
 
 // UIS Recolector
+import HomeRecolector from './ui/recolector/home.jsx';
 
 // Utilities
 import ProtectedRouteHome from './utilities/ProtectedRouteHome';
@@ -80,7 +81,23 @@ function AppContent() {
 
       </Route>
 
+    {/* RUTAS RECOLECTOR */}
+      <Route
+        path="/recolector"
+        element={
+          <ProtectedRouteRecolector element={<SidebarLayout />} />
+        }
+      >
+        {/* Ruta Home (cuando solo pones /recolector) */}
+        <Route index element={<HomeRecolector />} />
 
+        {/* Ruta Solicitar Préstamo */}
+        {/* <Route path="solicitar-prestamo" element={<SolicitarPrestamo />} /> */}
+
+
+        {/* Aquí agregas más módulos */}
+
+      </Route>
 
       {/* Ruta de error */}
       <Route path="/*" element={<ErrorPage404 />} />
