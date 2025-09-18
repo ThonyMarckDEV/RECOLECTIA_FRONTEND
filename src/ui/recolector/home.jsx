@@ -4,8 +4,9 @@ import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import locationservice from './services/locationservice';
 import jwtUtils from '../../utilities/jwtUtils';
+import camionIcon from '../../assets/img/camion.png'; // Import the truck icon
 
-// Fix Leaflet marker icon issue
+// Fix Leaflet marker icon issue (for default markers, not used here)
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
@@ -25,8 +26,31 @@ const UpdateMapCenter = ({ position }) => {
 
 const Home = () => {
   const [position, setPosition] = useState(null);
+  const [previousPosition, setPreviousPosition] = useState(null); // Track previous position
+  const [rotation, setRotation] = useState(0); // Store rotation angle
   const [error, setError] = useState(null);
   const [lastUpdate, setLastUpdate] = useState(0); // For throttling
+
+  // Calculate rotation angle based on movement direction
+  const calculateRotation = (prevPos, currPos) => {
+    if (!prevPos || !currPos) return 0;
+    const [prevLat, prevLng] = prevPos;
+    const [currLat, currLng] = currPos;
+    const deltaY = currLat - prevLat;
+    const deltaX = currLng - prevLng;
+    // Calculate angle in degrees (atan2 gives angle in radians, convert to degrees)
+    const angle = Math.atan2(deltaX, deltaY) * (180 / Math.PI);
+    return angle;
+  };
+
+  // Custom truck icon with rotation
+  const truckIcon = L.divIcon({
+    className: 'custom-truck-icon',
+    html: `<img src="${camionIcon}" style="transform: rotate(${rotation}deg); width: 32px; height: 32px;" />`,
+    iconSize: [32, 32], // Adjust size based on your camion.png
+    iconAnchor: [16, 16], // Center the icon
+    popupAnchor: [0, -16], // Position popup above the icon
+  });
 
   useEffect(() => {
     // Check if geolocation is supported
@@ -43,7 +67,16 @@ const Home = () => {
     const watchId = navigator.geolocation.watchPosition(
       async (pos) => {
         const { latitude, longitude } = pos.coords;
-        setPosition([latitude, longitude]);
+        const newPosition = [latitude, longitude];
+
+        // Update rotation based on movement
+        if (position) {
+          setPreviousPosition(position);
+          const newRotation = calculateRotation(position, newPosition);
+          setRotation(newRotation);
+        }
+
+        setPosition(newPosition);
         setError(null);
 
         // Throttle updates to backend (every 5 seconds)
@@ -81,7 +114,7 @@ const Home = () => {
 
     // Cleanup on unmount
     return () => navigator.geolocation.clearWatch(watchId);
-  }, [lastUpdate]);
+  }, [position, lastUpdate]);
 
   return (
     <div className="min-h-screen w-full bg-white border-4 border-white">
@@ -105,7 +138,7 @@ const Home = () => {
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             />
-            <Marker position={position}>
+            <Marker position={position} icon={truckIcon}>
               <Popup>Tu ubicación actual</Popup>
             </Marker>
             <UpdateMapCenter position={position} />
