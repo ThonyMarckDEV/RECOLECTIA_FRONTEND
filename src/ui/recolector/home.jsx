@@ -4,13 +4,24 @@ import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import locationservice from './services/locationservice';
 import jwtUtils from '../../utilities/jwtUtils';
+import truckIconUrl from '../../assets/img/camion.png'; // Import the truck icon
 
-// Fix Leaflet marker icon issue
+// Fix Leaflet marker icon issue and set default marker fallback
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
   iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
   shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+});
+
+// Custom truck icon
+const truckIcon = new L.Icon({
+  iconUrl: truckIconUrl, // Use imported image
+  iconSize: [38, 38], // Size of the icon
+  iconAnchor: [19, 38], // Point of the icon which will correspond to marker's location
+  popupAnchor: [0, -38], // Point from which the popup should open relative to the iconAnchor
+  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+  shadowSize: [41, 41], // Size of the shadow
 });
 
 const UpdateMapCenter = ({ position }) => {
@@ -46,9 +57,9 @@ const Home = () => {
         setPosition([latitude, longitude]);
         setError(null);
 
-        // Throttle updates to backend (every 5 seconds)
+        // Throttle updates to backend (every 10 seconds)
         const now = Date.now();
-        if (rol === 'recolector' && now - lastUpdate > 5000) {
+        if (rol === 'recolector' && now - lastUpdate > 10000) {
           try {
             await locationservice.updateLocation(latitude, longitude);
             setLastUpdate(now);
@@ -105,7 +116,7 @@ const Home = () => {
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             />
-            <Marker position={position}>
+            <Marker position={position} icon={truckIcon}>
               <Popup>Tu ubicación actual</Popup>
             </Marker>
             <UpdateMapCenter position={position} />
