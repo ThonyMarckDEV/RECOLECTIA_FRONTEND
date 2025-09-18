@@ -1,14 +1,38 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
+import locationservice from '../recolector/services/locationservice';
+import jwtUtils from '../../utilities/jwtUtils';
+import truckIconUrl from '../../assets/img/camion.png';
+import alertSound from '../../assets/sounds/alert.mp3';
 
-// Fix Leaflet marker icon issue
+// Fix Leaflet marker icon issue and set default marker fallback
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
   iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
   shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+});
+
+// Custom truck icon
+const truckIcon = new L.Icon({
+  iconUrl: truckIconUrl,
+  iconSize: [38, 38],
+  iconAnchor: [19, 38],
+  popupAnchor: [0, -38],
+  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+  shadowSize: [41, 41],
+});
+
+// User icon (default Leaflet icon for user location)
+const userIcon = new L.Icon({
+  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+  shadowSize: [41, 41],
 });
 
 const UpdateMapCenter = ({ position }) => {
@@ -21,23 +45,66 @@ const UpdateMapCenter = ({ position }) => {
   return null;
 };
 
-const Home = () => {
-  const [position, setPosition] = useState(null);
-  const [error, setError] = useState(null);
+// Function to calculate distance between two coordinates (Haversine formula)
+const calculateDistance = (lat1, lon1, lat2, lon2) => {
+  const R = 6371e3; // Earth's radius in meters
+  const φ1 = (lat1 * Math.PI) / 180;
+  const φ2 = (lat2 * Math.PI) / 180;
+  const Δφ = ((lat2 - lat1) * Math.PI) / 180;
+  const Δλ = ((lon2 - lon1) * Math.PI) / 180;
 
+  const a =
+    Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+    Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c; // Distance in meters
+};
+
+const Home = () => {
+  const [position, setPosition] = useState(null); // User's location
+  const [collectorPosition, setCollectorPosition] = useState(null); // Collector's location
+  const [error, setError] = useState(null);
+  const [userName, setUserName] = useState('');
+  const [role, setRole] = useState('');
+  const positionRef = useRef(null);
+  const lastUpdateRef = useRef(0);
+  const audioRef = useRef(new Audio(alertSound));
+
+  // Get user info and role from token
   useEffect(() => {
-    // Check if geolocation is supported
+    const token = jwtUtils.getAccessTokenFromCookie();
+    const nombre = jwtUtils.getFullName(token);
+    const rol = jwtUtils.getUserRole(token);
+    setUserName(nombre || 'Usuario');
+    setRole(rol);
+  }, []);
+
+  // Watch user's position
+  useEffect(() => {
     if (!navigator.geolocation) {
       setError('La geolocalización no está soportada en este navegador.');
       return;
     }
 
-    // Request permission and watch position
     const watchId = navigator.geolocation.watchPosition(
-      (pos) => {
+      async (pos) => {
         const { latitude, longitude } = pos.coords;
         setPosition([latitude, longitude]);
+        positionRef.current = [latitude, longitude];
         setError(null);
+
+        if (role === 'recolector') {
+          const now = Date.now();
+          if (now - lastUpdateRef.current > 10000) {
+            try {
+              await locationservice.updateLocation(latitude, longitude);
+              lastUpdateRef.current = now;
+            } catch (err) {
+              console.error('Error updating location:', err);
+              setError('Error al actualizar la ubicación del recolector.');
+            }
+          }
+        }
       },
       (err) => {
         switch (err.code) {
@@ -61,42 +128,89 @@ const Home = () => {
       }
     );
 
-    // Cleanup on unmount
     return () => navigator.geolocation.clearWatch(watchId);
-  }, []);
+  }, [role]);
+
+  // Fetch collector's location for usuario role
+  useEffect(() => {
+    let intervalId;
+    if (role === 'usuario') {
+      const fetchCollectorLocation = async () => {
+        try {
+          const { latitude, longitude } = await locationservice.getCollectorLocation();
+          setCollectorPosition([latitude, longitude]);
+          if (positionRef.current && latitude && longitude) {
+            const distance = calculateDistance(
+              positionRef.current[0],
+              positionRef.current[1],
+              latitude,
+              longitude
+            );
+            if (distance < 100) {
+              audioRef.current.play().catch((err) => console.error('Error playing sound:', err));
+            }
+          }
+        } catch (err) {
+          console.error('Error fetching collector location:', err);
+          setError('Error al obtener la ubicación del recolector.');
+        }
+      };
+      fetchCollectorLocation(); // Initial fetch
+      intervalId = setInterval(fetchCollectorLocation, 10000);
+    }
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+    };
+  }, [role]);
 
   return (
-    <div className="min-h-screen w-full bg-white border-4 border-white">
-      {/* Header */}
-      <h1 className="text-2xl sm:text-3xl font-bold text-green-600 text-center py-4">
-        Bienvenido a <span className="text-green-500">RECOLECT</span>
-        <span className="text-white bg-green-600 px-2 rounded">IA</span>
-      </h1>
-
-      {/* Map Section */}
-      <div className="w-full h-[calc(100vh-4rem)] sm:h-[calc(100vh-5rem)]">
+    <div className="min-h-screen w-full bg-gray-100 flex flex-col items-center">
+      <div className="w-full bg-white border-4 border-white">
+        <h1 className="text-2xl sm:text-3xl font-bold text-green-600 text-center py-4">
+          Bienvenido a <span className="text-green-500">RECOLECT</span>
+          <span className="text-white bg-green-600 px-2 rounded">IA</span>
+        </h1>
+        <h2 className="text-xl font-semibold text-gray-800 text-center mb-4">
+          {role === 'recolector' ? 'Recolector' : 'Usuario'}: {userName}
+        </h2>
+      </div>
+      <div className="w-full h-[70vh] fixed top-[8rem] sm:top-[9rem] left-0 z-0">
         {error ? (
-          <div className="flex justify-center items-center h-full">
+          <div className="flex justify-center items-center h-full bg-white">
             <p className="text-red-600 text-center">{error}</p>
           </div>
         ) : position ? (
           <MapContainer
-            center={position}
+            center={role === 'recolector' ? position : collectorPosition || position}
             zoom={15}
-            style={{ height: '90%', width: '100%' }}
+            style={{ height: '100%', width: '100%' }}
             className="z-0"
+            scrollWheelZoom={false}
           >
             <TileLayer
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             />
-            <Marker position={position}>
-              <Popup>Tu ubicación actual</Popup>
-            </Marker>
-            <UpdateMapCenter position={position} />
+            {role === 'recolector' ? (
+              <Marker position={position} icon={truckIcon}>
+                <Popup>Tu ubicación actual</Popup>
+              </Marker>
+            ) : (
+              <>
+                <Marker position={position} icon={userIcon}>
+                  <Popup>Tu ubicación actual</Popup>
+                </Marker>
+                {collectorPosition && (
+                  <Marker position={collectorPosition} icon={truckIcon}>
+                    <Popup>Ubicación del recolector</Popup>
+                  </Marker>
+                )}
+              </>
+            )}
+            <UpdateMapCenter position={role === 'recolector' ? position : collectorPosition || position} />
           </MapContainer>
         ) : (
-          <div className="flex justify-center items-center h-full">
+          <div className="flex justify-center items-center h-full bg-white">
             <p className="text-gray-600">Cargando ubicación...</p>
           </div>
         )}
