@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -16,6 +16,8 @@ const Login = () => {
   const [rememberMe, setRememberMe] = useState(false);
   const [loginMethod, setLoginMethod] = useState(null); // 'google' or 'personal'
   const navigate = useNavigate();
+  const usernameRef = useRef(null);
+  const passwordRef = useRef(null);
 
   const handleGoogleLoginSuccess = async (credentialResponse) => {
     setLoading(true);
@@ -88,14 +90,35 @@ const Login = () => {
       switch (rol) {
         case 'admin':
           toast.success('¡Login exitoso!');
+          // Limpiar formulario
+          setUsername('');
+          setPassword('');
+          setRememberMe(false);
+          // Cerrar teclado
+          if (usernameRef.current) usernameRef.current.blur();
+          if (passwordRef.current) passwordRef.current.blur();
+          // Restaurar posición de la pantalla
+          window.scrollTo(0, 0);
           setTimeout(() => navigate('/admin'), 1500);
           break;
         case 'usuario':
           toast.success('¡Login exitoso!');
+          setUsername('');
+          setPassword('');
+          setRememberMe(false);
+          if (usernameRef.current) usernameRef.current.blur();
+          if (passwordRef.current) passwordRef.current.blur();
+          window.scrollTo(0, 0);
           setTimeout(() => navigate('/usuario'), 1500);
           break;
         case 'recolector':
           toast.success('¡Login exitoso!');
+          setUsername('');
+          setPassword('');
+          setRememberMe(false);
+          if (usernameRef.current) usernameRef.current.blur();
+          if (passwordRef.current) passwordRef.current.blur();
+          window.scrollTo(0, 0);
           setTimeout(() => navigate('/recolector'), 1500);
           break;
         default:
@@ -149,7 +172,7 @@ const Login = () => {
           className="z-[9998]"
         />
         {/* Main Content */}
-        <div className="max-w-5xl w-full bg-white rounded-lg shadow-lg flex flex-col lg:flex-row overflow-hidden relative z-10 mt-6 sm:mt-10 lg:mt-20 animate-form">
+        <div className="max-w-5xl w-full bg-white rounded-lg shadow-lg flex flex-col lg:flex-row overflow-hidden relative z-10 mt-6 sm:mt-10 lg:mt-20">
           {/* Image Section */}
           <div className="w-full lg:w-1/2 h-48 sm:h-64 lg:h-auto">
             <img
@@ -175,6 +198,7 @@ const Login = () => {
                   className={`flex items-center justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white ${
                     loginMethod === 'google' ? 'bg-green-700' : 'bg-green-600 hover:bg-green-700'
                   } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500`}
+                  aria-label="Iniciar sesión con Google"
                 >
                   <svg
                     className="w-5 h-5 mr-2"
@@ -205,6 +229,7 @@ const Login = () => {
                   className={`flex items-center justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white ${
                     loginMethod === 'personal' ? 'bg-green-700' : 'bg-green-600 hover:bg-green-700'
                   } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500`}
+                  aria-label="Iniciar sesión con credenciales personales"
                 >
                   <svg
                     className="w-5 h-5 mr-2"
@@ -223,36 +248,40 @@ const Login = () => {
                   Personal
                 </button>
               </div>
-              {loginMethod === 'google' && (
-                <div className="w-full mt-6">
-                  <GoogleLogin
-                    onSuccess={handleGoogleLoginSuccess}
-                    onError={() => {
-                      toast.error('Error al iniciar sesión con Google');
-                    }}
-                    text="continue_with"
-                    shape="rectangular"
-                    theme="filled_black"
-                    width="250"
-                  />
-                  <p className="mt-4 text-sm text-gray-600 text-center">
-                    Inicia sesión o regístrate con tu cuenta de Google
-                  </p>
-                </div>
-              )}
-              {loginMethod === 'personal' && (
-                <div className="w-full mt-6">
-                  <LoginForm
-                    username={username}
-                    setUsername={setUsername}
-                    password={password}
-                    setPassword={setPassword}
-                    handleLogin={handleLogin}
-                    rememberMe={rememberMe}
-                    setRememberMe={setRememberMe}
-                  />
-                </div>
-              )}
+              <div className="w-full mt-6">
+                {loginMethod === 'google' && (
+                  <div className="animate-form">
+                    <GoogleLogin
+                      onSuccess={handleGoogleLoginSuccess}
+                      onError={() => {
+                        toast.error('Error al iniciar sesión con Google');
+                      }}
+                      text="continue_with"
+                      shape="rectangular"
+                      theme="filled_black"
+                      width="250"
+                    />
+                    <p className="mt-4 text-sm text-gray-600 text-center">
+                      Inicia sesión o regístrate con tu cuenta de Google
+                    </p>
+                  </div>
+                )}
+                {loginMethod === 'personal' && (
+                  <div>
+                    <LoginForm
+                      username={username}
+                      setUsername={setUsername}
+                      password={password}
+                      setPassword={setPassword}
+                      handleLogin={handleLogin}
+                      rememberMe={rememberMe}
+                      setRememberMe={setRememberMe}
+                      usernameRef={usernameRef}
+                      passwordRef={passwordRef}
+                    />
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
