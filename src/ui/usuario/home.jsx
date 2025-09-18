@@ -35,13 +35,18 @@ const userIcon = new L.Icon({
   shadowSize: [41, 41],
 });
 
-const UpdateMapCenter = ({ position }) => {
+const UpdateMapBounds = ({ userPosition, collectorPosition, role }) => {
   const map = useMap();
   useEffect(() => {
-    if (position) {
-      map.setView(position, map.getZoom());
+    if (role === 'recolector' && userPosition) {
+      map.setView(userPosition, 15);
+    } else if (role === 'usuario' && userPosition && collectorPosition) {
+      const bounds = L.latLngBounds([userPosition, collectorPosition]);
+      map.fitBounds(bounds, { padding: [50, 50] });
+    } else if (role === 'usuario' && userPosition) {
+      map.setView(userPosition, 15);
     }
-  }, [position, map]);
+  }, [userPosition, collectorPosition, role, map]);
   return null;
 };
 
@@ -173,47 +178,51 @@ const Home = () => {
         <h2 className="text-xl font-semibold text-gray-800 text-center mb-4">
           {role === 'recolector' ? 'Recolector' : 'Usuario'}: {userName}
         </h2>
-      </div>
-      <div className="w-full h-[70vh] fixed top-[8rem] sm:top-[9rem] left-0 z-0">
-        {error ? (
-          <div className="flex justify-center items-center h-full bg-white">
-            <p className="text-red-600 text-center">{error}</p>
-          </div>
-        ) : position ? (
-          <MapContainer
-            center={role === 'recolector' ? position : collectorPosition || position}
-            zoom={15}
-            style={{ height: '100%', width: '100%' }}
-            className="z-0"
-            scrollWheelZoom={false}
-          >
-            <TileLayer
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            />
-            {role === 'recolector' ? (
-              <Marker position={position} icon={truckIcon}>
-                <Popup>Tu ubicación actual</Popup>
-              </Marker>
-            ) : (
-              <>
-                <Marker position={position} icon={userIcon}>
+        <div className="w-full h-[70vh]">
+          {error ? (
+            <div className="flex justify-center items-center h-full bg-white">
+              <p className="text-red-600 text-center">{error}</p>
+            </div>
+          ) : position ? (
+            <MapContainer
+              center={role === 'recolector' ? position : position}
+              zoom={15}
+              style={{ height: '100%', width: '100%' }}
+              className="z-0"
+              scrollWheelZoom={false}
+            >
+              <TileLayer
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              />
+              {role === 'recolector' ? (
+                <Marker position={position} icon={truckIcon}>
                   <Popup>Tu ubicación actual</Popup>
                 </Marker>
-                {collectorPosition && (
-                  <Marker position={collectorPosition} icon={truckIcon}>
-                    <Popup>Ubicación del recolector</Popup>
+              ) : (
+                <>
+                  <Marker position={position} icon={userIcon}>
+                    <Popup>Tu ubicación actual</Popup>
                   </Marker>
-                )}
-              </>
-            )}
-            <UpdateMapCenter position={role === 'recolector' ? position : collectorPosition || position} />
-          </MapContainer>
-        ) : (
-          <div className="flex justify-center items-center h-full bg-white">
-            <p className="text-gray-600">Cargando ubicación...</p>
-          </div>
-        )}
+                  {collectorPosition && (
+                    <Marker position={collectorPosition} icon={truckIcon}>
+                      <Popup>Ubicación del recolector</Popup>
+                    </Marker>
+                  )}
+                </>
+              )}
+              <UpdateMapBounds
+                userPosition={position}
+                collectorPosition={collectorPosition}
+                role={role}
+              />
+            </MapContainer>
+          ) : (
+            <div className="flex justify-center items-center h-full bg-white">
+              <p className="text-gray-600">Cargando ubicación...</p>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
