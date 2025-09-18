@@ -60,19 +60,8 @@ const Sidebar = () => {
     ],
     recolector: [
       {
-        section: 'Dashboard',
-        link: '/recolector/dashboard',
-      },
-      {
-        section: 'Reports',
-        link: '/recolector/reports',
-      },
-      {
-        section: 'Teams',
-        subs: [
-          { name: 'Team List', link: '/recolector/teams/list' },
-          { name: 'Assign Tasks', link: '/recolector/teams/tasks' },
-        ],
+        section: 'Mapa',
+        link: '/recolector',
       },
     ],
   };

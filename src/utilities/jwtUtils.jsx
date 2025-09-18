@@ -20,7 +20,7 @@ export const getClaims = (token) => {
 export const getUsername = (token) => jwtDecode(token)?.username ?? null;
 
 // Función para obtener el nombre de usuario
-export const getFullName = (token) => jwtDecode(token)?.fullName ?? null;
+export const getFullName = (token) => jwtDecode(token)?.nombre ?? null;
 
 // Función para obtener el rol del usuario
 export const getUserRole = (token) => jwtDecode(token)?.rol ?? null;

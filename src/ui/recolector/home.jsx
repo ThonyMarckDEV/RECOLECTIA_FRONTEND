@@ -39,6 +39,9 @@ const Home = () => {
   const [error, setError] = useState(null);
   const [lastUpdate, setLastUpdate] = useState(0); // For throttling
 
+  const token = jwtUtils.getAccessTokenFromCookie();
+  const nombre = jwtUtils.getFullName(token);
+
   useEffect(() => {
     // Check if geolocation is supported
     if (!navigator.geolocation) {
@@ -95,11 +98,14 @@ const Home = () => {
   }, [lastUpdate]);
 
   return (
-    <div className="min-h-screen w-full bg-white border-4 border-white">
+    <div className="min w-full bg-white border-4 border-white">
       <h1 className="text-2xl sm:text-3xl font-bold text-green-600 text-center py-4">
         Bienvenido a <span className="text-green-500">RECOLECT</span>
         <span className="text-white bg-green-600 px-2 rounded">IA</span>
       </h1>
+      <h2 className="text-xl font-semibold text-gray-800 text-center mb-4">
+        Recolector: {nombre || 'Usuario'}
+      </h2>
       <div className="w-full h-[calc(100vh-4rem)] sm:h-[calc(100vh-5rem)]">
         {error ? (
           <div className="flex justify-center items-center h-full">
@@ -109,7 +115,7 @@ const Home = () => {
           <MapContainer
             center={position}
             zoom={15}
-            style={{ height: '90%', width: '100%' }}
+            style={{ height: '80%', width: '100%' }}
             className="z-0"
           >
             <TileLayer
