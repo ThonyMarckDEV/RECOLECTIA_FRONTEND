@@ -114,13 +114,13 @@ const Login = () => {
     <GoogleOAuthProvider clientId="265411714077-agc6ajcfsq3gu56982on32b52p7lbcir.apps.googleusercontent.com">
       <div className="relative min-h-screen w-full bg-gray-100 flex flex-col items-center justify-start p-4 overflow-hidden">
         {/* Header */}
-        <h1 className="text-4xl sm:text-5xl font-extrabold mt-8 mb-6 text-center">
+        <h1 className="text-4xl sm:text-5xl font-extrabold mt-8 mb-6 text-center animate-header">
           <span className="text-green-500">RECOLECT</span>
           <span className="text-white bg-green-600 px-2 rounded">IA</span>
         </h1>
 
         {/* Wave Background */}
-        <div className="fixed bottom-0 left-0 right-0 z-0">
+        <div className="fixed bottom-0 left-0 right-0 z-0 animate-wave">
           <svg
             className="w-full h-32 sm:h-48 md:h-56 lg:h-80"
             xmlns="http://www.w3.org/2000/svg"
@@ -145,7 +145,7 @@ const Login = () => {
           theme="light"
         />
         {/* Main Content */}
-        <div className="max-w-5xl w-full bg-white rounded-lg shadow-lg flex flex-col lg:flex-row overflow-hidden relative z-10 mt-6 sm:mt-10 lg:mt-20">
+        <div className="max-w-5xl w-full bg-white rounded-lg shadow-lg flex flex-col lg:flex-row overflow-hidden relative z-10 mt-6 sm:mt-10 lg:mt-20 animate-form">
           {/* Image Section */}
           <div className="w-full lg:w-1/2 h-48 sm:h-64 lg:h-auto">
             <img
@@ -257,6 +257,57 @@ const Login = () => {
           </div>
         </div>
       </div>
+
+      {/* Custom Animations */}
+      <style>
+        {`
+          @keyframes slideUp {
+            0% {
+              transform: translateY(100px);
+              opacity: 0;
+            }
+            100% {
+              transform: translateY(0);
+              opacity: 1;
+            }
+          }
+
+          @keyframes fadeScale {
+            0% {
+              transform: scale(0.8);
+              opacity: 0;
+            }
+            100% {
+              transform: scale(1);
+              opacity: 1;
+            }
+          }
+
+          @keyframes waveSlide {
+            0% {
+              transform: translateY(100%);
+              opacity: 0;
+            }
+            100% {
+              transform: translateY(0);
+              opacity: 1;
+            }
+          }
+
+          .animate-form {
+            animation: slideUp 0.8s ease-out forwards;
+          }
+
+          .animate-header {
+            animation: fadeScale 0.8s ease-out forwards;
+            animation-delay: 0.2s;
+          }
+
+          .animate-wave {
+            animation: waveSlide 1s ease-out forwards;
+          }
+        `}
+      </style>
     </GoogleOAuthProvider>
   );
 };
