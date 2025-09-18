@@ -47,15 +47,11 @@ const Sidebar = () => {
         link: '/usuario',
       },
       {
-        section: 'Solicitud Préstamos',
+        section: 'Reportes',
         subs: [
-          { name: 'Solicitar', link: '/usuario/solicitar-prestamo' },
-          { name: 'Mis Solicitudes', link: '/usuario/mis-solicitudes' },
+          { name: 'Hacer Reporte', link: '/usuario/hacer-reporte' },
+          { name: 'Mis Reportes', link: '/usuario/mis-reportes' },
         ],
-      },
-      {
-        section: 'Support',
-        link: '/usuario/support',
       },
     ],
     recolector: [

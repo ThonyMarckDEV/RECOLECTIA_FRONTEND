@@ -21,11 +21,11 @@ const ErrorPage = () => {
         <div className="text-center p-6 md:p-12">
           {/* Ícono con animación */}
           <div className="animate-in opacity-0 transform translate-y-8 transition-all duration-700 ease-out">
-            <FaRegSadCry className="text-8xl text-red-600 mb-8 mx-auto animate-bounce-slow" />
+            <FaRegSadCry className="text-8xl text-green-600 mb-8 mx-auto animate-bounce-slow" />
           </div>
           
           {/* Título "404" con efecto de glow */}
-          <h1 className="animate-in opacity-0 transform translate-y-8 transition-all duration-700 ease-out text-9xl font-bold text-transparent bg-clip-text bg-red-700 mb-4 ">
+          <h1 className="animate-in opacity-0 transform translate-y-8 transition-all duration-700 ease-out text-9xl font-bold text-transparent bg-clip-text bg-green-700 mb-4 ">
             401
           </h1>
           
@@ -38,7 +38,7 @@ const ErrorPage = () => {
           <div className="animate-in opacity-0 transform translate-y-8 transition-all duration-700 ease-out">
             <a
               href="/"
-              className="inline-block px-8 py-4 bg-red-600 text-white text-lg font-semibold rounded-lg  transition-all duration-300 transform hover:scale-105"
+              className="inline-block px-8 py-4 bg-green-600 text-white text-lg font-semibold rounded-lg  transition-all duration-300 transform hover:scale-105"
             >
               Volver al inicio
             </a>
