@@ -1,75 +1,42 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
+import Webcam from 'react-webcam';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import reportService from '../services/reportService';
 import jwtUtils from '../../../../utilities/jwtUtils';
 
 const Report = () => {
-  const [stream, setStream] = useState(null);
   const [photo, setPhoto] = useState(null);
   const [description, setDescription] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const videoRef = useRef(null);
-  const canvasRef = useRef(null);
-  const [isVideoReady, setIsVideoReady] = useState(false);
+  const webcamRef = useRef(null);
 
-  // Start camera stream
-  useEffect(() => {
-    const startCamera = async () => {
-      try {
-        const mediaStream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: { ideal: 'environment' } }, // Prefer rear camera, fallback if unavailable
-        });
-        setStream(mediaStream);
-        if (videoRef.current) {
-          videoRef.current.srcObject = mediaStream;
-          videoRef.current.onloadedmetadata = () => {
-            setIsVideoReady(true); // Mark video as ready when metadata is loaded
-          };
-        }
-      } catch (err) {
-        console.error('Error accessing camera:', err);
-        if (err.name === 'NotAllowedError') {
-          setError('Permiso para la cámara denegado. Por favor, habilita el acceso en tu navegador.');
-        } else if (err.name === 'NotFoundError') {
-          setError('No se encontró una cámara en el dispositivo.');
-        } else {
-          setError('Error al acceder a la cámara: ' + err.message);
-        }
-      }
-    };
-
-    startCamera();
-
-    return () => {
-      if (stream) {
-        stream.getTracks().forEach(track => track.stop());
-      }
-    };
-  }, []);
+  // Handle camera errors
+  const handleCameraError = (err) => {
+    console.error('Error accessing camera:', err);
+    if (err.name === 'NotAllowedError') {
+      setError('Permiso para la cámara denegado. Por favor, habilita el acceso en tu navegador.');
+    } else if (err.name === 'NotFoundError') {
+      setError('No se encontró una cámara en el dispositivo.');
+    } else {
+      setError('Error al acceder a la cámara: ' + err.message);
+    }
+  };
 
   // Capture photo
   const capturePhoto = () => {
-    if (!videoRef.current || !canvasRef.current || !isVideoReady) {
+    if (!webcamRef.current) {
       toast.error('La cámara no está lista. Por favor, espera o verifica los permisos.');
       return;
     }
 
-    const video = videoRef.current;
-    const canvas = canvasRef.current;
-    const context = canvas.getContext('2d');
-
-    // Set canvas dimensions to match video
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-
-    // Draw current video frame to canvas
-    context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-    // Get base64 image
     try {
-      const photoData = canvas.toDataURL('image/jpeg', 0.8); // Quality set to 0.8
+      const photoData = webcamRef.current.getScreenshot({ width: 640, height: 480 });
+      if (!photoData) {
+        toast.error('No se pudo capturar la foto. Asegúrate de que la cámara esté activa.');
+        return;
+      }
       setPhoto(photoData);
     } catch (err) {
       console.error('Error capturing photo:', err);
@@ -120,24 +87,22 @@ const Report = () => {
 
         {/* Camera Preview */}
         <div className="relative w-full h-64 bg-black rounded-lg overflow-hidden mb-4">
-          {stream ? (
-            <video
-              ref={videoRef}
-              autoPlay
-              playsInline
-              className="w-full h-full object-contain"
-            />
-          ) : (
-            <div className="flex justify-center items-center h-full text-white">
-              Cargando cámara...
-            </div>
-          )}
+          <Webcam
+            audio={false}
+            ref={webcamRef}
+            screenshotFormat="image/jpeg"
+            videoConstraints={{
+              facingMode: { ideal: 'environment' }, // Prefer rear camera
+            }}
+            onUserMediaError={handleCameraError}
+            className="w-full h-full object-contain"
+          />
         </div>
 
         {/* Capture Button */}
         <button
           onClick={capturePhoto}
-          disabled={isLoading || !stream || !isVideoReady}
+          disabled={isLoading || error}
           className="w-full py-2 px-4 bg-green-600 text-white font-semibold rounded-md shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:bg-gray-400 disabled:cursor-not-allowed mb-4"
         >
           Capturar Foto
@@ -190,9 +155,6 @@ const Report = () => {
           theme="light"
         />
       </div>
-
-      {/* Hidden Canvas for Photo Capture */}
-      <canvas ref={canvasRef} style={{ display: 'none' }} />
     </div>
   );
 };
