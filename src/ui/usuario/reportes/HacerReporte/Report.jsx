@@ -91,40 +91,50 @@ const Report = () => {
             </div>
           )}
 
-          {/* Camera Preview - Reduced Height */}
-          <div className="relative w-full h-48 sm:h-56 bg-black rounded-xl overflow-hidden mb-3 shadow-sm border border-gray-200">
-            <Webcam
-              audio={false}
-              ref={webcamRef}
-              screenshotFormat="image/jpeg"
-              videoConstraints={{
-                facingMode: { ideal: 'environment' },
-              }}
-              onUserMediaError={handleCameraError}
-              className="w-full h-full object-cover"
-            />
-            
-            {/* Floating Capture Button */}
-            <button
-              onClick={capturePhoto}
-              disabled={isLoading || error}
-              className="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-12 h-12 bg-white/90 backdrop-blur-sm rounded-full shadow-lg border border-gray-200 hover:bg-white focus:outline-none focus:ring-2 focus:ring-green-500 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all duration-200"
-            >
-              <svg className="w-5 h-5 mx-auto text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-            </button>
-          </div>
-
-          {/* Photo Preview */}
-          {photo && (
-            <div className="w-full h-48 sm:h-56 bg-gray-100 rounded-xl overflow-hidden mb-3 shadow-sm border border-gray-200">
+          {/* Camera Preview o Photo Preview */}
+          {!photo ? (
+            <div className="relative w-full h-72 sm:h-80 bg-black rounded-xl overflow-hidden mb-3 shadow-sm border border-gray-200">
+              <Webcam
+                audio={false}
+                ref={webcamRef}
+                screenshotFormat="image/jpeg"
+                videoConstraints={{
+                  facingMode: { ideal: 'environment' },
+                }}
+                onUserMediaError={handleCameraError}
+                className="w-full h-full object-cover"
+              />
+              
+              {/* Floating Capture Button */}
+              <button
+                onClick={capturePhoto}
+                disabled={isLoading || error}
+                className="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-12 h-12 bg-white/90 backdrop-blur-sm rounded-full shadow-lg border border-gray-200 hover:bg-white focus:outline-none focus:ring-2 focus:ring-green-500 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all duration-200"
+              >
+                <svg className="w-5 h-5 mx-auto text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+              </button>
+            </div>
+          ) : (
+            <div className="relative w-full h-72 sm:h-80 bg-gray-100 rounded-xl overflow-hidden mb-3 shadow-sm border border-gray-200">
               <img
                 src={photo}
                 alt="Captured report"
                 className="w-full h-full object-cover"
               />
+              
+              {/* Delete Photo Button */}
+              <button
+                onClick={() => setPhoto(null)}
+                disabled={isLoading}
+                className="absolute top-4 right-4 w-8 h-8 bg-red-500/90 backdrop-blur-sm rounded-full shadow-lg border border-red-300 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all duration-200"
+              >
+                <svg className="w-4 h-4 mx-auto text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
             </div>
           )}
 
