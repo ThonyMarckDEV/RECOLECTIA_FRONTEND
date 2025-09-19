@@ -20,13 +20,14 @@ import Login from './ui/auth/Login/Login.jsx';
 // UIS ADMIN
 import HomeAdmin from './ui/admin/home.jsx';
 import AgregarRecolector from './ui/admin/recolectores/AgregrarRecolector/Recolector.jsx';
-
+import ListarRecolectores from './ui/admin/recolectores/ListarRecolectores/listarRecolectores.jsx';
 
 // UIS Usuario
 import HomeUsuario from './ui/usuario/home.jsx';
 import Perfil from './ui/usuario/perfil/Perfil.jsx';
 import HacerReporte from './ui/usuario/reportes/HacerReporte/Report.jsx';
 import MisReportes from './ui/usuario/reportes/MisReportes/MisReportes.jsx';
+
 
 
 // UIS Recolector
@@ -60,6 +61,8 @@ function AppContent() {
 
         {/* Ruta para agregar recolectores */}
         <Route path="agregar-recolector" element={<AgregarRecolector />} />
+        {/* Ruta para listar recolectores */}
+        <Route path="listar-recolectores" element={<ListarRecolectores />} />
 
         {/* Aquí agregas más módulos */}
 
