@@ -25,24 +25,24 @@ const Sidebar = () => {
       {
         section: 'Dashboard',
         icon: '📊',
-        link: '/admin/dashboard',
+        link: '/admin',
       },
       {
-        section: 'Users',
-        icon: '👥',
+        section: 'Recolectores',
+        icon: '🚛',
         subs: [
-          { name: 'List Users', link: '/admin/users/list' },
-          { name: 'Add User', link: '/admin/users/add' },
+          { name: 'Agregar Recolector', link: '/admin/agregar-recolector' },
+          { name: 'Listar Recolectores', link: '/admin/listar-recolectores' },
         ],
       },
-      {
-        section: 'Settings',
-        icon: '⚙️',
-        subs: [
-          { name: 'General', link: '/admin/settings/general' },
-          { name: 'Security', link: '/admin/settings/security' },
-        ],
-      },
+      // {
+      //   section: 'Settings',
+      //   icon: '⚙️',
+      //   subs: [
+      //     { name: 'General', link: '/admin/settings/general' },
+      //     { name: 'Security', link: '/admin/settings/security' },
+      //   ],
+      // },
     ],
     usuario: [
       {
@@ -67,7 +67,7 @@ const Sidebar = () => {
     recolector: [
       {
         section: 'Mapa',
-        icon: '🚛',
+        icon: '🗺️',
         link: '/recolector',
       },
     ],
