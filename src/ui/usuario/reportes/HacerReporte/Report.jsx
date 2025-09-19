@@ -11,7 +11,35 @@ const Report = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [location, setLocation] = useState({ latitude: null, longitude: null });
+  const [canReport, setCanReport] = useState(true); // Nuevo estado para controlar si puede reportar
   const webcamRef = useRef(null);
+
+  // Verificar si el usuario puede reportar al cargar el componente
+  useEffect(() => {
+    const checkIfCanReport = async () => {
+      try {
+        const token = jwtUtils.getAccessTokenFromCookie();
+        const userId = jwtUtils.getUserID(token);
+        
+        if (!userId) {
+          setError('No se pudo obtener el ID del usuario.');
+          return;
+        }
+        
+        const canReportResponse = await reportService.canUserReport(userId);
+        setCanReport(canReportResponse.canReport);
+        
+        if (!canReportResponse.canReport) {
+          setError(canReportResponse.message);
+        }
+      } catch (err) {
+        console.error('Error checking report status:', err);
+        // No mostramos error aquí para no impedir el uso si falla esta verificación
+      }
+    };
+    
+    checkIfCanReport();
+  }, []);
 
   // Handle camera errors
   const handleCameraError = (err) => {
@@ -52,6 +80,11 @@ const Report = () => {
 
   // Capture photo
   const capturePhoto = () => {
+    if (!canReport) {
+      toast.error('No puedes crear un nuevo reporte porque ya tienes uno pendiente.');
+      return;
+    }
+    
     if (!webcamRef.current) {
       toast.error('La cámara no está lista. Por favor, espera o verifica los permisos.');
       return;
@@ -72,6 +105,11 @@ const Report = () => {
 
   // Handle report submission
   const handleSubmit = async () => {
+    if (!canReport) {
+      toast.error('No puedes crear un nuevo reporte porque ya tienes uno pendiente.');
+      return;
+    }
+    
     if (!photo || !description.trim()) {
       toast.error('Por favor, captura una foto y proporciona una descripción.');
       return;
@@ -100,9 +138,17 @@ const Report = () => {
       toast.success('Reporte enviado exitosamente');
       setPhoto(null);
       setDescription('');
+      setCanReport(false); // Ya no puede reportar hasta que se resuelva este
     } catch (err) {
       console.error('Error submitting report:', err);
-      toast.error(err.message || 'Error al enviar el reporte');
+      if (err.response && err.response.status === 422) {
+        // Error de validación (ya tiene reporte pendiente)
+        setCanReport(false);
+        setError(err.response.data.message);
+        toast.error(err.response.data.message);
+      } else {
+        toast.error(err.message || 'Error al enviar el reporte');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -145,7 +191,7 @@ const Report = () => {
               {/* Floating Capture Button */}
               <button
                 onClick={capturePhoto}
-                disabled={isLoading || error}
+                disabled={isLoading || error || !canReport}
                 className="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-12 h-12 bg-white/90 backdrop-blur-sm rounded-full shadow-lg border border-gray-200 hover:bg-white focus:outline-none focus:ring-2 focus:ring-green-500 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all duration-200"
               >
                 <svg className="w-5 h-5 mx-auto text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -183,14 +229,14 @@ const Report = () => {
               className="w-full px-4 py-3 border border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500 bg-white text-sm resize-none"
               rows="3"
               placeholder="Describe el problema o situación..."
-              disabled={isLoading}
+              disabled={isLoading || !canReport}
             />
           </div>
 
           {/* Submit Button */}
           <button
             onClick={handleSubmit}
-            disabled={isLoading || !photo || !description.trim() || !location.latitude || !location.longitude}
+            disabled={isLoading || !photo || !description.trim() || !location.latitude || !location.longitude || !canReport}
             className="w-full py-3 px-4 bg-green-600 text-white font-medium rounded-xl shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors duration-200 text-sm"
           >
             {isLoading ? (
@@ -202,6 +248,15 @@ const Report = () => {
               'Enviar Reporte'
             )}
           </button>
+
+          {/* Mensaje cuando no puede reportar */}
+          {!canReport && (
+            <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-xl text-center">
+              <p className="text-yellow-700 text-sm">
+                Ya tienes un reporte pendiente. Puedes ver su estado en la sección "Mis Reportes".
+              </p>
+            </div>
+          )}
         </div>
       </div>
 
