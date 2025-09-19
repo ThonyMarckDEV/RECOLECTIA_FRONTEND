@@ -171,7 +171,7 @@ const Home = () => {
         <h2 className="text-xl font-semibold text-gray-800 text-center mb-4">
           Usuario: {userName}
         </h2>
-        <div className="w-full h-[70vh]">
+        <div className="w-full h-[80vh]">
           {error ? (
             <div className="flex justify-center items-center h-full bg-white">
               <p className="text-red-600 text-center">{error}</p>
