@@ -1,13 +1,13 @@
 import { fetchWithAuth } from '../../../../js/authToken';
 import API_BASE_URL from '../../../../js/urlHelper';
 
-const createReport = async (photo, description, userId) => {
+const createReport = async (photo, description, userId, latitude, longitude) => {
   const response = await fetchWithAuth(`${API_BASE_URL}/api/reports/create`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ photo, description, idUsuario: userId }),
+    body: JSON.stringify({ photo, description, idUsuario: userId, latitude, longitude }),
   });
 
   const result = await response.json();
