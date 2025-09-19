@@ -19,8 +19,8 @@ const createReport = async (photo, description, userId, latitude, longitude) => 
   return result;
 };
 
-const listarReportes = async (userId) => {
-  const response = await fetchWithAuth(`${API_BASE_URL}/api/reports/list?userId=${userId}`, {
+const listarReportes = async () => {
+  const response = await fetchWithAuth(`${API_BASE_URL}/api/reports/list`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
