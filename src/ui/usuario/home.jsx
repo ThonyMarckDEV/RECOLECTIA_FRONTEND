@@ -7,7 +7,7 @@ import jwtUtils from '../../utilities/jwtUtils';
 import truckIconUrl from '../../assets/img/camion.png';
 import alertSound from '../../assets/sounds/alert.mp3';
 
-// Fix Leaflet marker icon issue and set default marker fallback
+// Fix Leaflet marker icon issue
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
@@ -21,16 +21,6 @@ const truckIcon = new L.Icon({
   iconSize: [38, 38],
   iconAnchor: [19, 38],
   popupAnchor: [0, -38],
-  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-  shadowSize: [41, 41],
-});
-
-// Default user icon
-const defaultUserIcon = new L.Icon({
-  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
   shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
   shadowSize: [41, 41],
 });
@@ -97,7 +87,7 @@ const Home = () => {
   useEffect(() => {
     const token = jwtUtils.getAccessTokenFromCookie();
     const nombre = jwtUtils.getFullName(token);
-    const perfil = jwtUtils.getUserProfile(token) || null; // Extract perfil from token
+    const perfil = jwtUtils.getUserProfile(token) || 'https://via.placeholder.com/40'; // Fallback to placeholder image
     setUserName(nombre || 'Usuario');
     setUserProfilePic(perfil);
   }, []);
@@ -141,7 +131,7 @@ const Home = () => {
     return () => navigator.geolocation.clearWatch(watchId);
   }, []);
 
-  // Fetch collector's location every 5 seconds
+  // Fetch collector's location every 1 second
   useEffect(() => {
     const fetchCollectorLocation = async () => {
       try {
@@ -164,12 +154,12 @@ const Home = () => {
       }
     };
     fetchCollectorLocation(); // Initial fetch
-    const intervalId = setInterval(fetchCollectorLocation, 5000); // Fetch every 5 seconds
+    const intervalId = setInterval(fetchCollectorLocation, 1000); // Fetch every 1 second
     return () => clearInterval(intervalId);
   }, []);
 
   // Create user icon based on profile picture
-  const userIconInstance = userProfilePic ? createCircularIcon(userProfilePic) : defaultUserIcon;
+  const userIconInstance = createCircularIcon(userProfilePic);
 
   return (
     <div className="min-h-screen w-full bg-gray-100 flex flex-col items-center">
