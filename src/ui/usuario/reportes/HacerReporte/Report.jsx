@@ -72,89 +72,127 @@ const Report = () => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-gray-100 flex flex-col items-center p-4">
-      <div className="w-full max-w-2xl bg-white border-4 border-white rounded-lg shadow-lg p-6">
-        <h1 className="text-2xl sm:text-3xl font-bold text-green-600 text-center py-4">
-          Crear Reporte <span className="text-green-500">RECOLECT</span>
-          <span className="text-white bg-green-600 px-2 rounded">IA</span>
+    <div className="min-h-screen w-full bg-gray-50 flex flex-col">
+      {/* Ultra Minimal Header */}
+      <header className="flex items-center justify-between px-6 py-4 bg-white z-10">
+        <h1 className="text-base font-semibold text-gray-900">
+          RECOLECT<span className="text-green-600">IA</span>
         </h1>
+        <span className="text-xs text-gray-500">Crear Reporte</span>
+      </header>
 
-        {error && (
-          <div className="mb-4 text-red-600 text-center p-2 bg-red-100 rounded-md">
-            {error}
+      {/* Main Content Container */}
+      <div className="flex-1 px-4 py-3">
+        <div className="max-w-2xl mx-auto">
+          {/* Error Message */}
+          {error && (
+            <div className="mb-3 text-red-600 text-center p-3 bg-red-50 rounded-xl border border-red-100 text-sm">
+              {error}
+            </div>
+          )}
+
+          {/* Camera Preview - Reduced Height */}
+          <div className="relative w-full h-48 sm:h-56 bg-black rounded-xl overflow-hidden mb-3 shadow-sm border border-gray-200">
+            <Webcam
+              audio={false}
+              ref={webcamRef}
+              screenshotFormat="image/jpeg"
+              videoConstraints={{
+                facingMode: { ideal: 'environment' },
+              }}
+              onUserMediaError={handleCameraError}
+              className="w-full h-full object-cover"
+            />
+            
+            {/* Floating Capture Button */}
+            <button
+              onClick={capturePhoto}
+              disabled={isLoading || error}
+              className="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-12 h-12 bg-white/90 backdrop-blur-sm rounded-full shadow-lg border border-gray-200 hover:bg-white focus:outline-none focus:ring-2 focus:ring-green-500 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all duration-200"
+            >
+              <svg className="w-5 h-5 mx-auto text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+            </button>
           </div>
-        )}
 
-        {/* Camera Preview */}
-        <div className="relative w-full h-64 bg-black rounded-lg overflow-hidden mb-4">
-          <Webcam
-            audio={false}
-            ref={webcamRef}
-            screenshotFormat="image/jpeg"
-            videoConstraints={{
-              facingMode: { ideal: 'environment' }, // Prefer rear camera
-            }}
-            onUserMediaError={handleCameraError}
-            className="w-full h-full object-contain"
-          />
-        </div>
+          {/* Photo Preview */}
+          {photo && (
+            <div className="w-full h-48 sm:h-56 bg-gray-100 rounded-xl overflow-hidden mb-3 shadow-sm border border-gray-200">
+              <img
+                src={photo}
+                alt="Captured report"
+                className="w-full h-full object-cover"
+              />
+            </div>
+          )}
 
-        {/* Capture Button */}
-        <button
-          onClick={capturePhoto}
-          disabled={isLoading || error}
-          className="w-full py-2 px-4 bg-green-600 text-white font-semibold rounded-md shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:bg-gray-400 disabled:cursor-not-allowed mb-4"
-        >
-          Capturar Foto
-        </button>
-
-        {/* Photo Preview */}
-        {photo && (
-          <div className="w-full h-64 bg-gray-200 rounded-lg overflow-hidden mb-4">
-            <img
-              src={photo}
-              alt="Captured report"
-              className="w-full h-full object-contain"
+          {/* Description Input */}
+          <div className="mb-4">
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="w-full px-4 py-3 border border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500 bg-white text-sm resize-none"
+              rows="3"
+              placeholder="Describe el problema o situación..."
+              disabled={isLoading}
             />
           </div>
-        )}
 
-        {/* Description Input */}
-        <div className="mb-4">
-          <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
-            Descripción del Reporte
-          </label>
-          <textarea
-            id="description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
-            rows="4"
-            placeholder="Describe el problema o situación..."
-            disabled={isLoading}
-          />
+          {/* Submit Button */}
+          <button
+            onClick={handleSubmit}
+            disabled={isLoading || !photo || !description.trim()}
+            className="w-full py-3 px-4 bg-green-600 text-white font-medium rounded-xl shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors duration-200 text-sm"
+          >
+            {isLoading ? (
+              <div className="flex items-center justify-center space-x-2">
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                <span>Enviando...</span>
+              </div>
+            ) : (
+              'Enviar Reporte'
+            )}
+          </button>
         </div>
-
-        {/* Submit Button */}
-        <button
-          onClick={handleSubmit}
-          disabled={isLoading}
-          className="w-full py-2 px-4 bg-green-600 text-white font-semibold rounded-md shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:bg-gray-400 disabled:cursor-not-allowed"
-        >
-          {isLoading ? 'Enviando...' : 'Enviar Reporte'}
-        </button>
-
-        {/* Toast Notifications */}
-        <ToastContainer
-          position="top-right"
-          autoClose={5000}
-          hideProgressBar={false}
-          closeOnClick
-          pauseOnHover
-          draggable
-          theme="light"
-        />
       </div>
+
+      {/* Bottom Space for Mobile Navigation */}
+      <div className="h-20 sm:h-8"></div>
+
+      {/* Toast Notifications - Minimalist Style */}
+      <ToastContainer
+        position="top-center"
+        autoClose={3000}
+        hideProgressBar
+        closeOnClick
+        pauseOnHover
+        draggable={false}
+        theme="light"
+        toastClassName="!bg-white !shadow-lg !border !border-gray-200 !rounded-xl !text-sm"
+        bodyClassName="!text-gray-700 !font-normal"
+        closeButton={false}
+      />
+
+      {/* Custom CSS for ultra minimal styling */}
+      <style jsx>{`
+        .Toastify__toast {
+          border-radius: 12px !important;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+          border: 1px solid #e5e7eb !important;
+        }
+        .Toastify__toast--success {
+          background: #f0fdf4 !important;
+          color: #16a34a !important;
+          border-color: #bbf7d0 !important;
+        }
+        .Toastify__toast--error {
+          background: #fef2f2 !important;
+          color: #dc2626 !important;
+          border-color: #fecaca !important;
+        }
+      `}</style>
     </div>
   );
 };
