@@ -24,6 +24,7 @@ import HomeAdmin from './ui/admin/home.jsx';
 // UIS Usuario
 import HomeUsuario from './ui/usuario/home.jsx';
 import HacerReporte from './ui/usuario/reportes/HacerReporte/Report.jsx';
+import MisReportes from './ui/usuario/reportes/MisReportes/MisReportes.jsx';
 
 
 // UIS Recolector
@@ -76,6 +77,9 @@ function AppContent() {
 
         {/* Ruta Hacer Reporte */}
         <Route path="hacer-reporte" element={<HacerReporte />} />
+
+        {/* Ruta Mis Reportes */}
+        <Route path="mis-reportes" element={<MisReportes />} />
 
 
         {/* Aquí agregas más módulos */}

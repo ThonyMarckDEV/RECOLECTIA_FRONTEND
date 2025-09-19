@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Webcam from 'react-webcam';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -10,6 +10,7 @@ const Report = () => {
   const [description, setDescription] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [location, setLocation] = useState({ latitude: null, longitude: null });
   const webcamRef = useRef(null);
 
   // Handle camera errors
@@ -23,6 +24,31 @@ const Report = () => {
       setError('Error al acceder a la cámara: ' + err.message);
     }
   };
+
+  // Get user's location
+  useEffect(() => {
+    if (!navigator.geolocation) {
+      setError('Geolocalización no soportada');
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const { latitude, longitude } = pos.coords;
+        setLocation({ latitude, longitude });
+        setError(null);
+      },
+      (err) => {
+        console.error('Error getting location:', err);
+        setError('No se pudo obtener la ubicación. Por favor, habilita los permisos de geolocalización.');
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0,
+      }
+    );
+  }, []);
 
   // Capture photo
   const capturePhoto = () => {
@@ -51,15 +77,26 @@ const Report = () => {
       return;
     }
 
+    if (!location.latitude || !location.longitude) {
+      toast.error('No se pudo obtener la ubicación. Habilita los permisos de geolocalización.');
+      return;
+    }
+
     setIsLoading(true);
     try {
       const token = jwtUtils.getAccessTokenFromCookie();
-      const userId = jwtUtils.getUserInfo(token)?.idUsuario;
+      const userId = jwtUtils.getUserID(token);
       if (!userId) {
         throw new Error('No se pudo obtener el ID del usuario.');
       }
 
-      await reportService.createReport(photo, description, userId);
+      await reportService.createReport(
+        photo,
+        description,
+        userId,
+        location.latitude,
+        location.longitude
+      );
       toast.success('Reporte enviado exitosamente');
       setPhoto(null);
       setDescription('');
@@ -153,7 +190,7 @@ const Report = () => {
           {/* Submit Button */}
           <button
             onClick={handleSubmit}
-            disabled={isLoading || !photo || !description.trim()}
+            disabled={isLoading || !photo || !description.trim() || !location.latitude || !location.longitude}
             className="w-full py-3 px-4 bg-green-600 text-white font-medium rounded-xl shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors duration-200 text-sm"
           >
             {isLoading ? (

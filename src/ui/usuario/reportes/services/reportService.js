@@ -1,13 +1,13 @@
 import { fetchWithAuth } from '../../../../js/authToken';
 import API_BASE_URL from '../../../../js/urlHelper';
 
-const createReport = async (photo, description, userId) => {
+const createReport = async (photo, description, userId, latitude, longitude) => {
   const response = await fetchWithAuth(`${API_BASE_URL}/api/reports/create`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ photo, description, idUsuario: userId }),
+    body: JSON.stringify({ photo, description, idUsuario: userId, latitude, longitude }),
   });
 
   const result = await response.json();
@@ -19,8 +19,26 @@ const createReport = async (photo, description, userId) => {
   return result;
 };
 
+const listarReportes = async (userId) => {
+  const response = await fetchWithAuth(`${API_BASE_URL}/api/reports/list?userId=${userId}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || 'Error al obtener los reportes');
+  }
+
+  return result;
+};
+
 const reportService = {
   createReport,
+  listarReportes,
 };
 
 export default reportService;
