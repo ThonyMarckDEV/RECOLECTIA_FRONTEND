@@ -147,7 +147,8 @@ const Home = () => {
         }
       } catch (err) {
         console.error('Error fetching collector location:', err);
-        setError('Error al obtener ubicación del recolector');
+        // Opcional: descomentar si quieres limpiar la posición en caso de error
+        // setCollectorPosition(null);
       }
     };
     fetchCollectorLocation();
