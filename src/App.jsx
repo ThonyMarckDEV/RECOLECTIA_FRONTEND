@@ -19,6 +19,7 @@ import Login from './ui/auth/Login/Login.jsx';
 
 // UIS ADMIN
 import HomeAdmin from './ui/admin/home.jsx';
+import AgregarRecolector from './ui/admin/recolectores/AgregrarRecolector/Recolector.jsx';
 
 
 // UIS Usuario
@@ -57,8 +58,8 @@ function AppContent() {
         {/* Ruta Home (cuando solo pones /admin) */}
         <Route index element={<HomeAdmin />} />
 
-        {/* Ruta Solicitar Préstamo */}
-        {/* <Route path="solicitar-prestamo" element={<SolicitarPrestamo />} /> */}
+        {/* Ruta para agregar recolectores */}
+        <Route path="agregar-recolector" element={<AgregarRecolector />} />
 
         {/* Aquí agregas más módulos */}
 
