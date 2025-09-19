@@ -108,8 +108,8 @@ const Home = () => {
         </div>
       </header>
 
-      {/* Map Container - Reduced Height */}
-      <div className="h-[70vh] sm:h-[75vh] relative mx-4 my-3 rounded-xl overflow-hidden shadow-sm border border-gray-200 z-0">
+      {/* Map Container - Removed Margins */}
+      <div className="h-[70vh] sm:h-[75vh] relative mx-0 my-0 rounded-xl overflow-hidden shadow-sm border border-gray-200 z-0">
         {error ? (
           <div className="flex items-center justify-center h-full bg-white rounded-xl">
             <div className="text-center">
