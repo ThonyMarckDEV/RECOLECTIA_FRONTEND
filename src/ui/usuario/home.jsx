@@ -56,18 +56,16 @@ const createCircularIcon = (url) => {
   });
 };
 
-const UpdateMapBounds = ({ userPosition, collectorPosition, role }) => {
+const UpdateMapBounds = ({ userPosition, collectorPosition }) => {
   const map = useMap();
   useEffect(() => {
-    if (role === 'recolector' && userPosition) {
-      map.setView(userPosition, 15);
-    } else if (role === 'usuario' && userPosition && collectorPosition) {
+    if (userPosition && collectorPosition) {
       const bounds = L.latLngBounds([userPosition, collectorPosition]);
       map.fitBounds(bounds, { padding: [50, 50] });
-    } else if (role === 'usuario' && userPosition) {
+    } else if (userPosition) {
       map.setView(userPosition, 15);
     }
-  }, [userPosition, collectorPosition, role, map]);
+  }, [userPosition, collectorPosition, map]);
   return null;
 };
 
@@ -91,20 +89,16 @@ const Home = () => {
   const [collectorPosition, setCollectorPosition] = useState(null); // Collector's location
   const [error, setError] = useState(null);
   const [userName, setUserName] = useState('');
-  const [role, setRole] = useState('');
   const [userProfilePic, setUserProfilePic] = useState(null); // Profile picture URL
   const positionRef = useRef(null);
-  const lastUpdateRef = useRef(0);
   const audioRef = useRef(new Audio(alertSound));
 
-  // Get user info and role from token
+  // Get user info from token
   useEffect(() => {
     const token = jwtUtils.getAccessTokenFromCookie();
     const nombre = jwtUtils.getFullName(token);
-    const rol = jwtUtils.getUserRole(token);
     const perfil = jwtUtils.getUserProfile(token) || null; // Extract perfil from token
     setUserName(nombre || 'Usuario');
-    setRole(rol);
     setUserProfilePic(perfil);
   }, []);
 
@@ -116,24 +110,11 @@ const Home = () => {
     }
 
     const watchId = navigator.geolocation.watchPosition(
-      async (pos) => {
+      (pos) => {
         const { latitude, longitude } = pos.coords;
         setPosition([latitude, longitude]);
         positionRef.current = [latitude, longitude];
         setError(null);
-
-        if (role === 'recolector') {
-          const now = Date.now();
-          if (now - lastUpdateRef.current > 10000) {
-            try {
-              await locationservice.updateLocation(latitude, longitude);
-              lastUpdateRef.current = now;
-            } catch (err) {
-              console.error('Error updating location:', err);
-              setError('Error al actualizar la ubicación del recolector.');
-            }
-          }
-        }
       },
       (err) => {
         switch (err.code) {
@@ -158,39 +139,34 @@ const Home = () => {
     );
 
     return () => navigator.geolocation.clearWatch(watchId);
-  }, [role]);
+  }, []);
 
-  // Fetch collector's location for usuario role
+  // Fetch collector's location every 5 seconds
   useEffect(() => {
-    let intervalId;
-    if (role === 'usuario') {
-      const fetchCollectorLocation = async () => {
-        try {
-          const { latitude, longitude } = await locationservice.getCollectorLocation();
-          setCollectorPosition([latitude, longitude]);
-          if (positionRef.current && latitude && longitude) {
-            const distance = calculateDistance(
-              positionRef.current[0],
-              positionRef.current[1],
-              latitude,
-              longitude
-            );
-            if (distance < 100) {
-              audioRef.current.play().catch((err) => console.error('Error playing sound:', err));
-            }
+    const fetchCollectorLocation = async () => {
+      try {
+        const { latitude, longitude } = await locationservice.getCollectorLocation();
+        setCollectorPosition([latitude, longitude]);
+        if (positionRef.current && latitude && longitude) {
+          const distance = calculateDistance(
+            positionRef.current[0],
+            positionRef.current[1],
+            latitude,
+            longitude
+          );
+          if (distance < 100) {
+            audioRef.current.play().catch((err) => console.error('Error playing sound:', err));
           }
-        } catch (err) {
-          console.error('Error fetching collector location:', err);
-          setError('Error al obtener la ubicación del recolector.');
         }
-      };
-      fetchCollectorLocation(); // Initial fetch
-      intervalId = setInterval(fetchCollectorLocation, 10000);
-    }
-    return () => {
-      if (intervalId) clearInterval(intervalId);
+      } catch (err) {
+        console.error('Error fetching collector location:', err);
+        setError('Error al obtener la ubicación del recolector.');
+      }
     };
-  }, [role]);
+    fetchCollectorLocation(); // Initial fetch
+    const intervalId = setInterval(fetchCollectorLocation, 5000); // Fetch every 5 seconds
+    return () => clearInterval(intervalId);
+  }, []);
 
   // Create user icon based on profile picture
   const userIconInstance = userProfilePic ? createCircularIcon(userProfilePic) : defaultUserIcon;
@@ -203,7 +179,7 @@ const Home = () => {
           <span className="text-white bg-green-600 px-2 rounded">IA</span>
         </h1>
         <h2 className="text-xl font-semibold text-gray-800 text-center mb-4">
-          {role === 'recolector' ? 'Recolector' : 'Usuario'}: {userName}
+          Usuario: {userName}
         </h2>
         <div className="w-full h-[70vh]">
           {error ? (
@@ -212,7 +188,7 @@ const Home = () => {
             </div>
           ) : position ? (
             <MapContainer
-              center={role === 'recolector' ? position : position}
+              center={position}
               zoom={15}
               style={{ height: '100%', width: '100%' }}
               className="z-0"
@@ -222,26 +198,17 @@ const Home = () => {
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
               />
-              {role === 'recolector' ? (
-                <Marker position={position} icon={userProfilePic ? createCircularIcon(userProfilePic) : truckIcon}>
-                  <Popup>Tu ubicación actual</Popup>
+              <Marker position={position} icon={userIconInstance}>
+                <Popup>Tu ubicación actual</Popup>
+              </Marker>
+              {collectorPosition && (
+                <Marker position={collectorPosition} icon={truckIcon}>
+                  <Popup>Ubicación del recolector</Popup>
                 </Marker>
-              ) : (
-                <>
-                  <Marker position={position} icon={userIconInstance}>
-                    <Popup>Tu ubicación actual</Popup>
-                  </Marker>
-                  {collectorPosition && (
-                    <Marker position={collectorPosition} icon={truckIcon}>
-                      <Popup>Ubicación del recolector</Popup>
-                    </Marker>
-                  )}
-                </>
               )}
               <UpdateMapBounds
                 userPosition={position}
                 collectorPosition={collectorPosition}
-                role={role}
               />
             </MapContainer>
           ) : (

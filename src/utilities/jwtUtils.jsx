@@ -137,7 +137,7 @@ export const setAccessTokenInCookie = (token) => {
 };
 
 
-export default {
+const jwtUtils = {
   getUsername,
   getFullName,
   getUserRole,
@@ -154,3 +154,5 @@ export default {
   getRefreshTokenIDFromCookie,
   getUserProfile
 };
+
+export default jwtUtils;
