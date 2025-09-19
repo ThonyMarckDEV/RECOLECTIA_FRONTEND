@@ -46,6 +46,11 @@ const Sidebar = () => {
     ],
     usuario: [
       {
+        section: 'Perfil',
+        icon: '👤',
+        link: '/usuario/perfil',
+      },
+      {
         section: 'Mapa',
         icon: '🗺️',
         link: '/usuario',
