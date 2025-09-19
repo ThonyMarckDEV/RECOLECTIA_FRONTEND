@@ -76,7 +76,7 @@ const Sidebar = () => {
 
   return (
     <>
-      {/* Minimal hamburger button for mobile */}
+      {/* Botón de hamburguesa para móvil */}
       <button
         className="md:hidden fixed top-6 left-6 z-50 p-2 bg-white/90 backdrop-blur-sm rounded-lg shadow-sm border border-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200"
         onClick={() => setIsOpen(!isOpen)}
@@ -84,7 +84,7 @@ const Sidebar = () => {
         <Bars3Icon className="h-5 w-5 text-gray-700" />
       </button>
 
-      {/* Overlay for mobile */}
+      {/* Overlay para móvil */}
       {isOpen && (
         <div
           className="fixed inset-0 bg-black/20 backdrop-blur-sm z-30 md:hidden"
@@ -92,92 +92,95 @@ const Sidebar = () => {
         />
       )}
 
-      {/* Minimal Sidebar */}
+      {/* Sidebar */}
       <div
-        className={`fixed left-0 top-0 h-full w-72 bg-white/95 backdrop-blur-md border-r border-gray-100 transform transition-all duration-300 ease-out z-40 ${
+        className={`fixed left-0 top-0 h-screen w-72 bg-white/95 backdrop-blur-md border-r border-gray-100 transform transition-all duration-300 ease-out z-40 md:sticky md:top-0 md:h-screen md:translate-x-0 md:block ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
-        } md:translate-x-0 md:relative md:block`}
+        }`}
       >
-        {/* Header with logo */}
-        <div className="h-20 flex items-center justify-center px-6 border-b border-gray-50">
-          <div className="flex items-center space-x-3">
-            <img
-              src={logo}
-              alt="Logo"
-              className="h-8 w-8 rounded-lg object-cover"
-            />
-            <span className="text-lg font-semibold text-gray-900">
-              RECOLECT<span className="text-green-600">IA</span>
-            </span>
+        {/* Contenedor principal con flex para el layout */}
+        <div className="flex flex-col h-full">
+          {/* Header con logo */}
+          <div className="flex-shrink-0 h-20 flex items-center justify-center px-6 border-b border-gray-50">
+            <div className="flex items-center space-x-3">
+              <img
+                src={logo}
+                alt="Logo"
+                className="h-8 w-8 rounded-lg object-cover"
+              />
+              <span className="text-lg font-semibold text-gray-900">
+                RECOLECT<span className="text-green-600">IA</span>
+              </span>
+            </div>
           </div>
-        </div>
 
-        {/* Navigation Menu */}
-        <div className="flex-1 overflow-y-auto py-6">
-          <nav className="px-4 space-y-1">
-            {roleMenu.map((item, index) => (
-              <div key={index}>
-                {item.subs ? (
-                  <>
-                    <button
-                      className="w-full flex items-center justify-between text-gray-700 hover:text-gray-900 hover:bg-gray-50 py-2.5 px-3 rounded-lg transition-all duration-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-200"
-                      onClick={() => toggleSection(item.section)}
+          {/* Menú de navegación - Crece para ocupar el espacio disponible */}
+          <div className="flex-1 overflow-y-auto py-6">
+            <nav className="px-4 space-y-1">
+              {roleMenu.map((item, index) => (
+                <div key={index}>
+                  {item.subs ? (
+                    <>
+                      <button
+                        className="w-full flex items-center justify-between text-gray-700 hover:text-gray-900 hover:bg-gray-50 py-2.5 px-3 rounded-lg transition-all duration-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-200"
+                        onClick={() => toggleSection(item.section)}
+                      >
+                        <div className="flex items-center space-x-3">
+                          <span className="text-lg">{item.icon}</span>
+                          <span>{item.section}</span>
+                        </div>
+                        <ChevronRightIcon
+                          className={`h-4 w-4 transform transition-transform duration-200 ${
+                            openSections[item.section] ? 'rotate-90' : ''
+                          }`}
+                        />
+                      </button>
+                      {openSections[item.section] && (
+                        <div className="ml-6 mt-1 space-y-1">
+                          {item.subs.map((sub, subIndex) => (
+                            <Link
+                              key={subIndex}
+                              to={sub.link}
+                              className="block text-gray-600 hover:text-gray-900 hover:bg-gray-50 py-2 px-3 rounded-lg transition-all duration-200 text-sm"
+                              onClick={() => setIsOpen(false)}
+                            >
+                              {sub.name}
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <Link
+                      to={item.link}
+                      className="flex items-center space-x-3 text-gray-700 hover:text-gray-900 hover:bg-gray-50 py-2.5 px-3 rounded-lg transition-all duration-200 text-sm font-medium"
+                      onClick={() => setIsOpen(false)}
                     >
-                      <div className="flex items-center space-x-3">
-                        <span className="text-lg">{item.icon}</span>
-                        <span>{item.section}</span>
-                      </div>
-                      <ChevronRightIcon
-                        className={`h-4 w-4 transform transition-transform duration-200 ${
-                          openSections[item.section] ? 'rotate-90' : ''
-                        }`}
-                      />
-                    </button>
-                    {openSections[item.section] && (
-                      <div className="ml-6 mt-1 space-y-1">
-                        {item.subs.map((sub, subIndex) => (
-                          <Link
-                            key={subIndex}
-                            to={sub.link}
-                            className="block text-gray-600 hover:text-gray-900 hover:bg-gray-50 py-2 px-3 rounded-lg transition-all duration-200 text-sm"
-                            onClick={() => setIsOpen(false)}
-                          >
-                            {sub.name}
-                          </Link>
-                        ))}
-                      </div>
-                    )}
-                  </>
-                ) : (
-                  <Link
-                    to={item.link}
-                    className="flex items-center space-x-3 text-gray-700 hover:text-gray-900 hover:bg-gray-50 py-2.5 px-3 rounded-lg transition-all duration-200 text-sm font-medium"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    <span className="text-lg">{item.icon}</span>
-                    <span>{item.section}</span>
-                  </Link>
-                )}
-              </div>
-            ))}
-          </nav>
-        </div>
+                      <span className="text-lg">{item.icon}</span>
+                      <span>{item.section}</span>
+                    </Link>
+                  )}
+                </div>
+              ))}
+            </nav>
+          </div>
 
-        {/* Minimal logout button */}
-        <div className="p-4 border-t border-gray-50">
-          <button
-            onClick={() => setShowConfirm(true)}
-            className="w-full flex items-center justify-center space-x-2 text-gray-600 hover:text-red-600 hover:bg-red-50 px-3 py-2.5 rounded-lg transition-all duration-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-red-200"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-            </svg>
-            <span>Cerrar Sesión</span>
-          </button>
+          {/* Botón de cerrar sesión - Fijado al final */}
+          <div className="flex-shrink-0 p-4 border-t border-gray-50">
+            <button
+              onClick={() => setShowConfirm(true)}
+              className="w-full flex items-center justify-center space-x-2 text-gray-600 hover:text-red-600 hover:bg-red-50 px-3 py-2.5 rounded-lg transition-all duration-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-red-200"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+              <span>Cerrar Sesión</span>
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Minimal confirmation modal */}
+      {/* Modal de confirmación */}
       {showConfirm && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl shadow-lg w-full max-w-sm p-6 border border-gray-100">
