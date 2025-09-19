@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Bars3Icon, ChevronDownIcon } from '@heroicons/react/24/outline';
+import { Bars3Icon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import jwtUtils from '../../utilities/jwtUtils';
 import { logout } from '../../js/logout';
 import logo from '../../assets/img/logo.jpg';
@@ -24,10 +24,12 @@ const Sidebar = () => {
     admin: [
       {
         section: 'Dashboard',
+        icon: '📊',
         link: '/admin/dashboard',
       },
       {
         section: 'Users',
+        icon: '👥',
         subs: [
           { name: 'List Users', link: '/admin/users/list' },
           { name: 'Add User', link: '/admin/users/add' },
@@ -35,6 +37,7 @@ const Sidebar = () => {
       },
       {
         section: 'Settings',
+        icon: '⚙️',
         subs: [
           { name: 'General', link: '/admin/settings/general' },
           { name: 'Security', link: '/admin/settings/security' },
@@ -44,10 +47,12 @@ const Sidebar = () => {
     usuario: [
       {
         section: 'Mapa',
+        icon: '🗺️',
         link: '/usuario',
       },
       {
         section: 'Reportes',
+        icon: '📝',
         subs: [
           { name: 'Hacer Reporte', link: '/usuario/hacer-reporte' },
           { name: 'Mis Reportes', link: '/usuario/mis-reportes' },
@@ -57,6 +62,7 @@ const Sidebar = () => {
     recolector: [
       {
         section: 'Mapa',
+        icon: '🚛',
         link: '/recolector',
       },
     ],
@@ -70,115 +76,143 @@ const Sidebar = () => {
 
   return (
     <>
-      {/* Hamburger button for mobile */}
+      {/* Minimal hamburger button for mobile */}
       <button
-        className="md:hidden fixed top-4 left-4 z-50 p-2 bg-white rounded-md shadow-md focus:outline-none focus:ring-2 focus:ring-green-500"
+        className="md:hidden fixed top-6 left-6 z-50 p-2 bg-white/90 backdrop-blur-sm rounded-lg shadow-sm border border-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200"
         onClick={() => setIsOpen(!isOpen)}
       >
-        <Bars3Icon className="h-6 w-6 text-gray-800" />
+        <Bars3Icon className="h-5 w-5 text-gray-700" />
       </button>
 
-      {/* Sidebar */}
+      {/* Overlay for mobile */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-black/20 backdrop-blur-sm z-30 md:hidden"
+          onClick={() => setIsOpen(false)}
+        />
+      )}
+
+      {/* Minimal Sidebar */}
       <div
-        className={`fixed left-0 top-0 h-full w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-40 ${
+        className={`fixed left-0 top-0 h-full w-72 bg-white/95 backdrop-blur-md border-r border-gray-100 transform transition-all duration-300 ease-out z-40 ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
-        } md:translate-x-0 md:fixed md:block`}
+        } md:translate-x-0 md:relative md:block`}
       >
-        {/* Top half: White with image */}
-        <div className="h-1/4 bg-white flex items-center justify-center">
-          <img
-            src={logo}
-            alt="Logo"
-            className="h-40 w-auto"
-          />
+        {/* Header with logo */}
+        <div className="h-20 flex items-center justify-center px-6 border-b border-gray-50">
+          <div className="flex items-center space-x-3">
+            <img
+              src={logo}
+              alt="Logo"
+              className="h-8 w-8 rounded-lg object-cover"
+            />
+            <span className="text-lg font-semibold text-gray-900">
+              RECOLECT<span className="text-green-600">IA</span>
+            </span>
+          </div>
         </div>
 
-        {/* Bottom half: Red with menu */}
-        <div className="h-3/4 bg-green-500 overflow-y-auto p-4 flex flex-col">
-          <nav className="space-y-2 flex-grow">
+        {/* Navigation Menu */}
+        <div className="flex-1 overflow-y-auto py-6">
+          <nav className="px-4 space-y-1">
             {roleMenu.map((item, index) => (
               <div key={index}>
                 {item.subs ? (
                   <>
                     <button
-                      className="w-full flex items-center justify-between text-white py-2 px-4 rounded-md hover:bg-green-600 transition focus:outline-none"
+                      className="w-full flex items-center justify-between text-gray-700 hover:text-gray-900 hover:bg-gray-50 py-2.5 px-3 rounded-lg transition-all duration-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-200"
                       onClick={() => toggleSection(item.section)}
                     >
-                      <span>{item.section}</span>
-                      <ChevronDownIcon
-                        className={`h-5 w-5 transform transition-transform ${
-                          openSections[item.section] ? 'rotate-180' : ''
+                      <div className="flex items-center space-x-3">
+                        <span className="text-lg">{item.icon}</span>
+                        <span>{item.section}</span>
+                      </div>
+                      <ChevronRightIcon
+                        className={`h-4 w-4 transform transition-transform duration-200 ${
+                          openSections[item.section] ? 'rotate-90' : ''
                         }`}
                       />
                     </button>
                     {openSections[item.section] && (
-                      <ul className="ml-4 space-y-1">
+                      <div className="ml-6 mt-1 space-y-1">
                         {item.subs.map((sub, subIndex) => (
-                          <li key={subIndex}>
-                            <Link
-                              to={sub.link}
-                              className="block text-white py-1 px-4 rounded-md hover:bg-green-600 transition"
-                              onClick={() => setIsOpen(false)}
-                            >
-                              {sub.name}
-                            </Link>
-                          </li>
+                          <Link
+                            key={subIndex}
+                            to={sub.link}
+                            className="block text-gray-600 hover:text-gray-900 hover:bg-gray-50 py-2 px-3 rounded-lg transition-all duration-200 text-sm"
+                            onClick={() => setIsOpen(false)}
+                          >
+                            {sub.name}
+                          </Link>
                         ))}
-                      </ul>
+                      </div>
                     )}
                   </>
                 ) : (
                   <Link
                     to={item.link}
-                    className="block text-white py-2 px-4 rounded-md hover:bg-green-600 transition"
+                    className="flex items-center space-x-3 text-gray-700 hover:text-gray-900 hover:bg-gray-50 py-2.5 px-3 rounded-lg transition-all duration-200 text-sm font-medium"
                     onClick={() => setIsOpen(false)}
                   >
-                    {item.section}
+                    <span className="text-lg">{item.icon}</span>
+                    <span>{item.section}</span>
                   </Link>
                 )}
               </div>
             ))}
           </nav>
-
-          {/* Logout button at the bottom */}
-          <div className="mt-auto p-4 border-t border-green-700">
-            <button
-              onClick={() => setShowConfirm(true)}
-              className="w-full flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md transition focus:outline-none focus:ring-2 focus:ring-green-500"
-            >
-              Cerrar Sesión
-            </button>
-          </div>
         </div>
 
+        {/* Minimal logout button */}
+        <div className="p-4 border-t border-gray-50">
+          <button
+            onClick={() => setShowConfirm(true)}
+            className="w-full flex items-center justify-center space-x-2 text-gray-600 hover:text-red-600 hover:bg-red-50 px-3 py-2.5 rounded-lg transition-all duration-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-red-200"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+            <span>Cerrar Sesión</span>
+          </button>
+        </div>
       </div>
 
-      {/* Confirmation modal */}
+      {/* Minimal confirmation modal */}
       {showConfirm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-11/12 max-w-sm">
-            <h3 className="text-lg font-semibold mb-4 text-gray-800">
-              ¿Estás seguro/a de cerrar sesión?
-            </h3>
-            <div className="flex justify-end gap-4">
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-lg w-full max-w-sm p-6 border border-gray-100">
+            <div className="flex items-center space-x-3 mb-4">
+              <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
+                <svg className="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Cerrar sesión
+                </h3>
+                <p className="text-sm text-gray-500">
+                  ¿Estás seguro de que quieres salir?
+                </p>
+              </div>
+            </div>
+            <div className="flex space-x-3">
               <button
                 onClick={() => setShowConfirm(false)}
-                className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400 text-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                className="flex-1 px-4 py-2.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-300"
               >
-                No
+                Cancelar
               </button>
               <button
                 onClick={handleLogout}
-                className="px-4 py-2 rounded bg-green-600 text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="flex-1 px-4 py-2.5 rounded-lg bg-red-600 hover:bg-red-700 text-white text-sm font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500"
               >
-                Sí
+                Cerrar sesión
               </button>
             </div>
           </div>
         </div>
       )}
-
-
     </>
   );
 };

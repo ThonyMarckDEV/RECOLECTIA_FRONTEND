@@ -4,7 +4,7 @@ import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import locationservice from './services/locationservice';
 import jwtUtils from '../../utilities/jwtUtils';
-import truckIconUrl from '../../assets/img/camion.png'; // Import the truck icon
+import truckIconUrl from '../../assets/img/camion.png';
 
 // Fix Leaflet marker icon issue and set default marker fallback
 delete L.Icon.Default.prototype._getIconUrl;
@@ -14,14 +14,12 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
 });
 
-// Custom truck icon
+// Minimalist truck icon
 const truckIcon = new L.Icon({
-  iconUrl: truckIconUrl, // Use imported image
-  iconSize: [38, 38], // Size of the icon
-  iconAnchor: [19, 38], // Point of the icon which will correspond to marker's location
-  popupAnchor: [0, -38], // Point from which the popup should open relative to the iconAnchor
-  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-  shadowSize: [41, 41], // Size of the shadow
+  iconUrl: truckIconUrl,
+  iconSize: [32, 32],
+  iconAnchor: [16, 32],
+  popupAnchor: [0, -32],
 });
 
 const UpdateMapCenter = ({ position }) => {
@@ -37,23 +35,19 @@ const UpdateMapCenter = ({ position }) => {
 const Home = () => {
   const [position, setPosition] = useState(null);
   const [error, setError] = useState(null);
-  const [lastUpdate, setLastUpdate] = useState(0); // For throttling
+  const [lastUpdate, setLastUpdate] = useState(0);
 
   const token = jwtUtils.getAccessTokenFromCookie();
   const nombre = jwtUtils.getFullName(token);
 
   useEffect(() => {
-    // Check if geolocation is supported
     if (!navigator.geolocation) {
-      setError('La geolocalización no está soportada en este navegador.');
+      setError('Geolocalización no soportada');
       return;
     }
 
-    // Get role from token
-    const token = jwtUtils.getAccessTokenFromCookie();
     const rol = jwtUtils.getUserRole(token);
 
-    // Request permission and watch position
     const watchId = navigator.geolocation.watchPosition(
       async (pos) => {
         const { latitude, longitude } = pos.coords;
@@ -74,16 +68,16 @@ const Home = () => {
       (err) => {
         switch (err.code) {
           case err.PERMISSION_DENIED:
-            setError('Permiso de geolocalización denegado. Por favor, habilita la ubicación en tu navegador.');
+            setError('Permiso de ubicación denegado');
             break;
           case err.POSITION_UNAVAILABLE:
-            setError('La ubicación no está disponible.');
+            setError('Ubicación no disponible');
             break;
           case err.TIMEOUT:
-            setError('Se agotó el tiempo para obtener la ubicación.');
+            setError('Tiempo agotado');
             break;
           default:
-            setError('Error al obtener la ubicación.');
+            setError('Error de ubicación');
         }
       },
       {
@@ -93,46 +87,98 @@ const Home = () => {
       }
     );
 
-    // Cleanup on unmount
     return () => navigator.geolocation.clearWatch(watchId);
-  }, [lastUpdate]);
+  }, [lastUpdate, token]);
 
   return (
-    <div className="min w-full bg-white border-4 border-white">
-      <h1 className="text-2xl sm:text-3xl font-bold text-green-600 text-center py-4">
-        Bienvenido a <span className="text-green-500">RECOLECT</span>
-        <span className="text-white bg-green-600 px-2 rounded">IA</span>
-      </h1>
-      <h2 className="text-xl font-semibold text-gray-800 text-center mb-4">
-        Recolector: {nombre || 'Usuario'}
-      </h2>
-      <div className="w-full h-[calc(100vh-4rem)] sm:h-[calc(100vh-5rem)]">
+    <div className="min-h-screen w-full bg-gray-50 flex flex-col">
+      {/* Ultra Minimal Header */}
+      <header className="flex items-center justify-between px-6 py-4 bg-white z-10">
+        <h1 className="text-base font-semibold text-gray-900">
+          RECOLECT<span className="text-green-600">IA</span>
+        </h1>
+        <div className="flex items-center space-x-2">
+          <div className="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center">
+            <svg className="w-3 h-3 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"/>
+              <path d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H10a1 1 0 001-1V5a1 1 0 00-1-1H3zM14 7a1 1 0 00-1 1v6.05A2.5 2.5 0 0115.95 16H17a1 1 0 001-1V8a1 1 0 00-1-1h-3z"/>
+            </svg>
+          </div>
+          <span className="text-xs text-gray-500 hidden sm:block">{nombre || 'Recolector'}</span>
+        </div>
+      </header>
+
+      {/* Map Container - Reduced Height */}
+      <div className="h-[70vh] sm:h-[75vh] relative mx-4 my-3 rounded-xl overflow-hidden shadow-sm border border-gray-200 z-0">
         {error ? (
-          <div className="flex justify-center items-center h-full">
-            <p className="text-red-600 text-center">{error}</p>
+          <div className="flex items-center justify-center h-full bg-white rounded-xl">
+            <div className="text-center">
+              <div className="w-8 h-8 mx-auto mb-2 text-gray-300">
+                <svg fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <p className="text-xs text-gray-400">{error}</p>
+            </div>
           </div>
         ) : position ? (
           <MapContainer
             center={position}
             zoom={15}
-            style={{ height: '80%', width: '100%' }}
-            className="z-0"
+            style={{ height: '100%', width: '100%', borderRadius: '12px', zIndex: 0 }}
+            zoomControl={false}
+            scrollWheelZoom={true}
+            className="focus:outline-none"
           >
             <TileLayer
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+              attribution=""
             />
             <Marker position={position} icon={truckIcon}>
-              <Popup>Tu ubicación actual</Popup>
+              <Popup closeButton={false} className="minimal-popup">
+                Tu ubicación actual
+              </Popup>
             </Marker>
             <UpdateMapCenter position={position} />
           </MapContainer>
         ) : (
-          <div className="flex justify-center items-center h-full">
-            <p className="text-gray-600">Cargando ubicación...</p>
+          <div className="flex items-center justify-center h-full bg-white rounded-xl">
+            <div className="text-center">
+              <div className="w-6 h-6 mx-auto mb-2 border-2 border-gray-200 border-t-green-500 rounded-full animate-spin"></div>
+              <p className="text-xs text-gray-400">Cargando ubicación</p>
+            </div>
           </div>
         )}
       </div>
+
+      {/* Bottom Space for Mobile Navigation */}
+      <div className="h-20 sm:h-8"></div>
+
+      {/* Custom CSS for ultra minimal styling */}
+      <style jsx>{`
+        .minimal-popup .leaflet-popup-content-wrapper {
+          background: rgba(255, 255, 255, 0.98);
+          border-radius: 6px;
+          box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+          border: 1px solid rgba(0, 0, 0, 0.04);
+          z-index: 10;
+        }
+        .minimal-popup .leaflet-popup-content {
+          margin: 6px 10px;
+          font-size: 11px;
+          color: #6b7280;
+          font-weight: 500;
+          text-align: center;
+        }
+        .minimal-popup .leaflet-popup-tip {
+          background: rgba(255, 255, 255, 0.98);
+          border: 1px solid rgba(0, 0, 0, 0.04);
+        }
+        .leaflet-container {
+          background: #f8fafc !important;
+          z-index: 0 !important;
+        }
+      `}</style>
     </div>
   );
 };
