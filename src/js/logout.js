@@ -35,14 +35,14 @@ export async function logout() {
     // Eliminar tokens de las cookies
     jwtUtils.removeTokensFromCookie();
 
-    window.location.href = '/login';
+    window.location.href = '/';
 
   } catch (error) {
     console.error('Error durante el logout:', error);
 
     jwtUtils.removeTokensFromCookie();
 
-    window.location.href = '/login';
+    window.location.href = '/';
 
   } finally {
     // Ocultar FetchWithGif y limpiar el contenedor
