@@ -188,37 +188,7 @@ const ListarZonas = () => {
       </div>
       {/* Bottom Space for Mobile Navigation */}
       <div className="h-20 sm:h-8"></div>
-      {/* Toast Notifications - Minimalist Style */}
-      <ToastContainer
-        position="top-center"
-        autoClose={3000}
-        hideProgressBar
-        closeOnClick
-        pauseOnHover
-        draggable={false}
-        theme="light"
-        toastClassName="!bg-white !shadow-lg !border !border-gray-200 !rounded-xl !text-sm"
-        bodyClassName="!text-gray-700 !font-normal"
-        closeButton={false}
-      />
-      {/* Custom CSS for ultra minimal styling */}
-      <style jsx>{`
-        .Toastify__toast {
-          border-radius: 12px !important;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
-          border: 1px solid #e5e7eb !important;
-        }
-        .Toastify__toast--success {
-          background: #f0fdf4 !important;
-          color: #16a34a !important;
-          border-color: #bbf7d0 !important;
-        }
-        .Toastify__toast--error {
-          background: #fef2f2 !important;
-          color: #dc2626 !important;
-          border-color: #fecaca !important;
-        }
-      `}</style>
+
     </div>
   );
 };

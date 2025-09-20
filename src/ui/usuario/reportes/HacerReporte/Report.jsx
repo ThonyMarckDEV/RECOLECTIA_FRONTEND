@@ -210,20 +210,6 @@ const Report = () => {
 
       {/* Bottom Space for Mobile Navigation */}
       <div className="h-20 sm:h-8"></div>
-
-      {/* Toast Notifications - Minimalist Style */}
-      <ToastContainer
-        position="top-center"
-        autoClose={3000}
-        hideProgressBar
-        closeOnClick={false} // Deshabilitar closeOnClick para evitar el error
-        pauseOnHover
-        draggable={false}
-        theme="light"
-        toastClassName="!bg-white !shadow-lg !border !border-gray-200 !rounded-xl !text-sm"
-        bodyClassName="!text-gray-700 !font-normal"
-        closeButton={false}
-      />
     </div>
   );
 };
