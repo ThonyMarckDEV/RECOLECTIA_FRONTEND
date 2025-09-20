@@ -8,7 +8,7 @@ const ProtectedRouteManager = ({ element }) => {
 
 
   if (!refresh_token) {
-    return <Navigate to="/404" />;
+    return <Navigate to="/" />;
   }
 
   const rol = jwtUtils.getUserRole(refresh_token);

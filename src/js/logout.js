@@ -32,16 +32,14 @@ export async function logout() {
       console.warn('No se encontró idToken, omitiendo llamada al backend');
     }
 
-    // Redirigir a la página principal
-    window.location.href = '/';
-
     // Eliminar tokens de las cookies
     jwtUtils.removeTokensFromCookie();
+
   } catch (error) {
     console.error('Error durante el logout:', error);
-    // Eliminar tokens y redirigir incluso si falla la llamada al backend
+
     jwtUtils.removeTokensFromCookie();
-    window.location.href = '/';
+
   } finally {
     // Ocultar FetchWithGif y limpiar el contenedor
     root.unmount();

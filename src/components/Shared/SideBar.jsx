@@ -17,7 +17,6 @@ const Sidebar = () => {
   const handleLogout = () => {
     logout();
     setShowConfirm(false);
-    navigate('/login');
   };
 
   const menus = {
