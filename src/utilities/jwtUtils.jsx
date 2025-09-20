@@ -31,6 +31,9 @@ export const getEmail= (token) => jwtDecode(token)?.email ?? null;
 // Función para obtener el rol del usuario
 export const getUserID = (token) => jwtDecode(token)?.sub ?? null;
 
+// Función para obtener el idZona del usuario
+export const getIdZona = (token) => jwtDecode(token)?.idZona ?? null;
+
 // Función para obtener el perfil del usuario
 export const getUserProfile = (token) => jwtDecode(token)?.perfil ?? null;
 
@@ -152,7 +155,8 @@ const jwtUtils = {
   setAccessTokenInCookie,
   getUserID,
   getRefreshTokenIDFromCookie,
-  getUserProfile
+  getUserProfile,
+  getIdZona
 };
 
 export default jwtUtils;

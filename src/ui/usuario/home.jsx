@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import locationservice from '../recolector/services/locationservice';
-import perfilService from './perfil/services/perfilService';
-import ZonaSelect from '../../components/Shared/Comboboxes/Zona/ZonaSelect';
+import jwtUtils from '../../utilities/jwtUtils';
 import truckIconUrl from '../../assets/img/camion.png';
 import alertSound from '../../assets/sounds/alert.mp3';
 import { toast } from 'react-toastify';
@@ -79,34 +79,30 @@ const Home = () => {
   const [error, setError] = useState(null);
   const [userName, setUserName] = useState('');
   const [userProfilePic, setUserProfilePic] = useState(null); // Profile picture URL
-  const [userIdZona, setUserIdZona] = useState(null); // User's idZona
-  const [selectedZona, setSelectedZona] = useState('');
-  const [isSavingZona, setIsSavingZona] = useState(false);
   const positionRef = useRef(null);
   const audioRef = useRef(new Audio(alertSound));
+  const navigate = useNavigate();
 
-  // Fetch user profile to get idZona and other info
+  // Check idZona from token and redirect if null
   useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const response = await perfilService.getProfile();
-        const data = response.data;
-        setUserIdZona(data.idZona || null);
-        setUserName(data.name || 'Usuario');
-        setUserProfilePic(data.perfil || 'https://via.placeholder.com/24');
-      } catch (err) {
-        console.error('Error fetching profile:', err);
-        toast.error('Error al cargar el perfil');
+    const token = jwtUtils.getAccessTokenFromCookie();
+    if (token) {
+      const idZona = jwtUtils.getIdZona(token); // Asumiendo getIdZona en jwtUtils
+      if (idZona === null) {
+        toast.info('Por favor establece tu zona primero');
+        navigate('/usuario/perfil');
+        return;
       }
-    };
+      setUserName(jwtUtils.getFullName(token) || 'Usuario');
+      setUserProfilePic(jwtUtils.getUserProfile(token) || 'https://via.placeholder.com/24');
+    } else {
+      toast.error('Sesión no encontrada');
+      navigate('/');
+    }
+  }, [navigate]);
 
-    fetchProfile();
-  }, []);
-
-  // Watch user's position only if user has a zone
+  // Watch user's position
   useEffect(() => {
-    if (!userIdZona) return;
-
     if (!navigator.geolocation) {
       setError('Geolocalización no soportada');
       return;
@@ -142,12 +138,10 @@ const Home = () => {
     );
 
     return () => navigator.geolocation.clearWatch(watchId);
-  }, [userIdZona]);
+  }, []);
 
-  // Fetch collector's location every 1 second only if user has a zone
+  // Fetch collector's location every 1 second
   useEffect(() => {
-    if (!userIdZona) return;
-
     const fetchCollectorLocation = async () => {
       try {
         const { latitude, longitude } = await locationservice.getCollectorLocation();
@@ -165,39 +159,12 @@ const Home = () => {
         }
       } catch (err) {
         console.error('Error fetching collector location:', err);
-        // Opcional: descomentar si quieres limpiar la posición en caso de error
-        // setCollectorPosition(null);
       }
     };
     fetchCollectorLocation();
     const intervalId = setInterval(fetchCollectorLocation, 1000);
     return () => clearInterval(intervalId);
-  }, [userIdZona]);
-
-  // Handle zona selection change
-  const handleZonaChange = (e) => {
-    setSelectedZona(e.target.value);
-  };
-
-  // Handle save zona
-  const handleSaveZona = async () => {
-    if (!selectedZona) {
-      toast.error('Selecciona una zona');
-      return;
-    }
-
-    setIsSavingZona(true);
-    try {
-      await perfilService.updateZona(selectedZona);
-      setUserIdZona(selectedZona);
-      toast.success('Zona guardada exitosamente');
-    } catch (err) {
-      console.error('Error saving zona:', err);
-      toast.error('Error al guardar la zona');
-    } finally {
-      setIsSavingZona(false);
-    }
-  };
+  }, []);
 
   // Create user icon based on profile picture
   const userIconInstance = createUserIcon(userProfilePic);
@@ -221,86 +188,57 @@ const Home = () => {
         </div>
       </header>
 
-      {/* Content based on whether user has zona */}
-      <div className="flex-1 px-4 py-3">
-        <div className="max-w-2xl mx-auto">
-          {userIdZona === null ? (
-            // Show zona selection if no zona
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <h2 className="text-base font-semibold text-gray-900 mb-4 text-center">
-                Selecciona tu zona
-              </h2>
-              <div className="mb-4">
-                <ZonaSelect
-                  name="idZona"
-                  value={selectedZona}
-                  onChange={handleZonaChange}
-                  disabled={isSavingZona}
-                />
+      {/* Map Container - Reduced Height */}
+      <div className="h-[70vh] sm:h-[75vh] relative mx-4 my-3 rounded-xl overflow-hidden shadow-sm border border-gray-200 z-0">
+        {error ? (
+          <div className="flex items-center justify-center h-full bg-white rounded-xl">
+            <div className="text-center">
+              <div className="w-8 h-8 mx-auto mb-2 text-gray-300">
+                <svg fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
               </div>
-              <button
-                onClick={handleSaveZona}
-                disabled={isSavingZona || !selectedZona}
-                className="w-full py-3 px-4 bg-green-600 text-white font-medium rounded-xl shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors duration-200 text-sm"
-              >
-                {isSavingZona ? 'Guardando...' : 'Guardar Zona'}
-              </button>
+              <p className="text-xs text-gray-400">{error}</p>
             </div>
-          ) : (
-            // Show map if has zona
-            <div className="h-[70vh] sm:h-[75vh] relative rounded-xl overflow-hidden shadow-sm border border-gray-200 z-0">
-              {error ? (
-                <div className="flex items-center justify-center h-full bg-white rounded-xl">
-                  <div className="text-center">
-                    <div className="w-8 h-8 mx-auto mb-2 text-gray-300">
-                      <svg fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                      </svg>
-                    </div>
-                    <p className="text-xs text-gray-400">{error}</p>
-                  </div>
-                </div>
-              ) : position ? (
-                <MapContainer
-                  center={position}
-                  zoom={15}
-                  style={{ height: '100%', width: '100%', borderRadius: '12px', zIndex: 0 }}
-                  zoomControl={false}
-                  scrollWheelZoom={true}
-                  className="focus:outline-none"
-                >
-                  <TileLayer
-                    url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
-                    attribution=""
-                  />
-                  <Marker position={position} icon={userIconInstance}>
-                    <Popup closeButton={false} className="minimal-popup">
-                      Tu ubicación
-                    </Popup>
-                  </Marker>
-                  {collectorPosition && (
-                    <Marker position={collectorPosition} icon={truckIcon}>
-                      <Popup closeButton={false} className="minimal-popup">
-                        Recolector
-                      </Popup>
-                    </Marker>
-                  )}
-                  <UpdateMapBounds
-                    userPosition={position}
-                    collectorPosition={collectorPosition}
-                  />
-                </MapContainer>
-              ) : (
-                <div className="flex items-center justify-center h-full bg-white rounded-xl">
-                  <div className="text-center">
-                    <div className="w-6 h-6 mx-auto mb-2 border-2 border-gray-200 border-t-green-500 rounded-full animate-spin"></div>
-                    <p className="text-xs text-gray-400">Cargando ubicación</p>
-                  </div>
-                </div>
-              )}
+          </div>
+        ) : position ? (
+          <MapContainer
+            center={position}
+            zoom={15}
+            style={{ height: '100%', width: '100%', borderRadius: '12px', zIndex: 0 }}
+            zoomControl={false}
+            scrollWheelZoom={true}
+            className="focus:outline-none"
+          >
+            <TileLayer
+              url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+              attribution=""
+            />
+            <Marker position={position} icon={userIconInstance}>
+              <Popup closeButton={false} className="minimal-popup">
+                Tu ubicación
+              </Popup>
+            </Marker>
+            {collectorPosition && (
+              <Marker position={collectorPosition} icon={truckIcon}>
+                <Popup closeButton={false} className="minimal-popup">
+                  Recolector
+                </Popup>
+              </Marker>
+            )}
+            <UpdateMapBounds
+              userPosition={position}
+              collectorPosition={collectorPosition}
+            />
+          </MapContainer>
+        ) : (
+          <div className="flex items-center justify-center h-full bg-white rounded-xl">
+            <div className="text-center">
+              <div className="w-6 h-6 mx-auto mb-2 border-2 border-gray-200 border-t-green-500 rounded-full animate-spin"></div>
+              <p className="text-xs text-gray-400">Cargando ubicación</p>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
       {/* Bottom Space for Mobile Navigation */}

@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { toast } from 'react-toastify'; // Remove ToastContainer if moved to root
+import { toast } from 'react-toastify';
 import perfilService from './services/perfilService';
+import { refreshAccessToken } from '../../../js/authToken'; 
 import jwtUtils from '../../../utilities/jwtUtils';
+import ZonaSelect from '../../../components/Shared/Comboboxes/Zona/ZonaSelect'; 
 
 const Perfil = () => {
-  const [user, setUser] = useState({ name: '', perfil: '', recolectPoints: 0, idZona: null });
+  const [user, setUser] = useState({ name: '', perfil: '', recolectPoints: 0, idZona: null, zona: null });
+  const [selectedZona, setSelectedZona] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isSavingZona, setIsSavingZona] = useState(false);
   const [error, setError] = useState(null);
 
   // Obtener datos del perfil
@@ -19,7 +23,9 @@ const Perfil = () => {
         }
 
         const response = await perfilService.getProfile();
-        setUser(response.data);
+        const data = response.data;
+        setUser(data);
+        setSelectedZona(data.idZona || '');
         setError(null);
       } catch (err) {
         console.error('Error fetching profile:', err);
@@ -32,6 +38,42 @@ const Perfil = () => {
 
     fetchProfile();
   }, []);
+
+  // Handle zona selection change
+  const handleZonaChange = (e) => {
+    setSelectedZona(e.target.value);
+  };
+
+  // Handle save zona and refresh token
+  const handleSaveZona = async () => {
+    if (!selectedZona) {
+      toast.error('Selecciona una zona');
+      return;
+    }
+
+    if (selectedZona === user.idZona) {
+      toast.info('La zona seleccionada es la misma');
+      return;
+    }
+
+    setIsSavingZona(true);
+    try {
+      await perfilService.updateZona(selectedZona);
+      // Refrescar access token
+      const newToken = await refreshAccessToken();
+      jwtUtils.setAccessTokenInCookie(newToken);
+      // Refrescar perfil con nuevo data
+      const response = await perfilService.getProfile();
+      setUser(response.data);
+      setSelectedZona(response.data.idZona);
+      toast.success('Zona actualizada exitosamente');
+    } catch (err) {
+      console.error('Error updating zona:', err);
+      toast.error('Error al actualizar la zona');
+    } finally {
+      setIsSavingZona(false);
+    }
+  };
 
   return (
     <div className="min-h-screen w-full bg-gray-50 flex flex-col">
@@ -90,10 +132,35 @@ const Perfil = () => {
                 </p>
               </div>
 
-              {/* Zona (if available) */}
-              <p className="text-sm text-gray-500">
-                Zona: {user.idZona ? `ID ${user.idZona}` : 'No asignada'}
-              </p>
+              {/* Zona Actual */}
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Zona Actual
+                </label>
+                <p className="text-sm text-gray-500">
+                  {user.zona ? `ID ${user.idZona} - ${user.zona.nombre} - ${user.zona.descripcion}` : 'No asignada'}
+                </p>
+              </div>
+
+              {/* Seleccionar Nueva Zona */}
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Actualizar Zona
+                </label>
+                <ZonaSelect
+                  name="idZona"
+                  value={selectedZona}
+                  onChange={handleZonaChange}
+                  disabled={isSavingZona}
+                />
+              </div>
+              <button
+                onClick={handleSaveZona}
+                disabled={isSavingZona || !selectedZona || selectedZona === user.idZona}
+                className="w-full py-3 px-4 bg-green-600 text-white font-medium rounded-xl shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors duration-200 text-sm"
+              >
+                {isSavingZona ? 'Guardando...' : 'Actualizar Zona'}
+              </button>
             </div>
           )}
         </div>

@@ -119,4 +119,4 @@ function logout() {
   window.location.href = '/'; // Redirigir a la página de login
 }
 
-export { fetchWithAuth, verificarYRenovarToken, logout, validateRefreshTokenID };
+export { fetchWithAuth, verificarYRenovarToken, logout, validateRefreshTokenID , refreshAccessToken };
