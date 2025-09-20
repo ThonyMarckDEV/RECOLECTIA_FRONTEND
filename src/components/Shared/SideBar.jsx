@@ -28,6 +28,11 @@ const Sidebar = () => {
         link: '/admin',
       },
       {
+        section: 'Reportes',
+        icon: '📝',
+        link: '/admin/reportes',
+      },
+      {
         section: 'Recolectores',
         icon: '🚛',
         subs: [
@@ -35,14 +40,6 @@ const Sidebar = () => {
           { name: 'Listar Recolectores', link: '/admin/listar-recolectores' },
         ],
       },
-      // {
-      //   section: 'Settings',
-      //   icon: '⚙️',
-      //   subs: [
-      //     { name: 'General', link: '/admin/settings/general' },
-      //     { name: 'Security', link: '/admin/settings/security' },
-      //   ],
-      // },
     ],
     usuario: [
       {
