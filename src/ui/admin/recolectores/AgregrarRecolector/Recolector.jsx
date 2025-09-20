@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import recolectorService from '../services/recolectoresService';
+import ZonaSelect from '../../../../components/Shared/Comboboxes/Zona/ZonaSelect';
 
 const Recolector = () => {
   const [username, setUsername] = useState('');
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [estado, setEstado] = useState('1');
+  const [idZona, setIdZona] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -22,13 +24,15 @@ const Recolector = () => {
         username,
         name,
         password,
-        parseInt(estado)
+        parseInt(estado),
+        parseInt(idZona)
       );
       toast.success('Recolector creado exitosamente');
       setUsername('');
       setName('');
       setPassword('');
       setEstado('1');
+      setIdZona('');
     } catch (err) {
       console.error('Error creating recolector:', err);
       setError(err.message || 'Error al crear el recolector');
@@ -125,10 +129,22 @@ const Recolector = () => {
               </select>
             </div>
 
+            {/* Zona */}
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Zona
+              </label>
+              <ZonaSelect
+                value={idZona}
+                onChange={(e) => setIdZona(e.target.value)}
+                disabled={isLoading}
+              />
+            </div>
+
             {/* Submit Button */}
             <button
               type="submit"
-              disabled={isLoading || !username || !name || !password}
+              disabled={isLoading || !username || !name || !password || !idZona}
               className="w-full py-3 px-4 bg-green-600 text-white font-medium rounded-xl shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors duration-200 text-sm"
             >
               {isLoading ? (

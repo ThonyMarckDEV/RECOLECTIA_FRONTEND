@@ -2,31 +2,33 @@ import React, { useState, useEffect } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import recolectorService from '../services/recolectoresService';
+import ZonaSelect from '../../../../components/Shared/Comboboxes/Zona/ZonaSelect';
 
 const ListarRecolectores = () => {
   const [recolectores, setRecolectores] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [editingId, setEditingId] = useState(null);
-  const [editForm, setEditForm] = useState({ username: '', name: '', password: '', estado: '1' });
+  const [editForm, setEditForm] = useState({ username: '', name: '', password: '', estado: '1', idZona: '' });
 
-  // Obtener recolectores
+  // Función para obtener recolectores
+  const fetchRecolectores = async () => {
+    setIsLoading(true);
+    try {
+      const recolectoresRes = await recolectorService.listarRecolectores();
+      setRecolectores(recolectoresRes.data);
+      setError(null);
+    } catch (err) {
+      console.error('Error fetching recolectores:', err);
+      setError(err.message || 'Error al cargar los recolectores');
+      toast.error(err.message || 'Error al cargar los recolectores');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Obtener recolectores al montar el componente
   useEffect(() => {
-    const fetchRecolectores = async () => {
-      setIsLoading(true);
-      try {
-        const response = await recolectorService.listarRecolectores();
-        setRecolectores(response.data);
-        setError(null);
-      } catch (err) {
-        console.error('Error fetching recolectores:', err);
-        setError(err.message || 'Error al cargar los recolectores');
-        toast.error(err.message || 'Error al cargar los recolectores');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     fetchRecolectores();
   }, []);
 
@@ -38,13 +40,14 @@ const ListarRecolectores = () => {
       name: recolector.name,
       password: '',
       estado: recolector.estado.toString(),
+      idZona: recolector.idZona.toString(),
     });
   };
 
   // Cancelar edición
   const cancelEditing = () => {
     setEditingId(null);
-    setEditForm({ username: '', name: '', password: '', estado: '1' });
+    setEditForm({ username: '', name: '', password: '', estado: '1', idZona: '' });
   };
 
   // Manejar cambios en el formulario
@@ -65,16 +68,12 @@ const ListarRecolectores = () => {
         editForm.username,
         editForm.name,
         editForm.password || null,
-        parseInt(editForm.estado)
+        parseInt(editForm.estado),
+        parseInt(editForm.idZona)
       );
       toast.success('Recolector actualizado exitosamente');
-      setRecolectores((prev) =>
-        prev.map((recolector) =>
-          recolector.idUsuario === idUsuario
-            ? { ...recolector, username: editForm.username, name: editForm.name, estado: parseInt(editForm.estado) }
-            : recolector
-        )
-      );
+      // Refrescar la lista de recolectores para actualizar la vista con la nueva zona anidada
+      await fetchRecolectores();
       cancelEditing();
     } catch (err) {
       console.error('Error updating recolector:', err);
@@ -191,10 +190,21 @@ const ListarRecolectores = () => {
                           <option value="0">Inactivo</option>
                         </select>
                       </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Zona
+                        </label>
+                        <ZonaSelect
+                          name="idZona"
+                          value={editForm.idZona}
+                          onChange={handleEditChange}
+                          disabled={isLoading}
+                        />
+                      </div>
                       <div className="flex space-x-2">
                         <button
                           type="submit"
-                          disabled={isLoading || !editForm.username || !editForm.name}
+                          disabled={isLoading || !editForm.username || !editForm.name || !editForm.idZona}
                           className="flex-1 py-2 px-4 bg-green-600 text-white font-medium rounded-xl shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors duration-200 text-sm"
                         >
                           Guardar
@@ -216,6 +226,9 @@ const ListarRecolectores = () => {
                         <p className="text-xs text-gray-500">{recolector.username}</p>
                         <p className="text-xs text-gray-500">
                           Estado: {recolector.estado === 1 ? 'Activo' : 'Inactivo'}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          Zona: {recolector.zona ? `${recolector.zona.nombre} - ${recolector.zona.descripcion}` : 'Sin zona'}
                         </p>
                       </div>
                       <button

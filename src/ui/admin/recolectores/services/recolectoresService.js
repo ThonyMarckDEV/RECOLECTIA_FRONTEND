@@ -1,13 +1,13 @@
 import { fetchWithAuth } from '../../../../js/authToken';
 import API_BASE_URL from '../../../../js/urlHelper';
 
-const createRecolector = async (username, name, password, estado) => {
+const createRecolector = async (username, name, password, estado, idZona) => {
   const response = await fetchWithAuth(`${API_BASE_URL}/api/recolectores/create`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ username, name, password, estado }),
+    body: JSON.stringify({ username, name, password, estado, idZona }),
   });
 
   const result = await response.json();
@@ -36,13 +36,13 @@ const listarRecolectores = async () => {
   return result;
 };
 
-const updateRecolector = async (idUsuario, username, name, password, estado) => {
+const updateRecolector = async (idUsuario, username, name, password, estado, idZona) => {
   const response = await fetchWithAuth(`${API_BASE_URL}/api/recolectores/update/${idUsuario}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ username, name, password, estado }),
+    body: JSON.stringify({ username, name, password, estado, idZona }),
   });
 
   const result = await response.json();
