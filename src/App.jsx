@@ -18,7 +18,6 @@ import ErrorPage401 from './components/ErrorPage401';
 import Login from './ui/auth/Login/Login.jsx';
 
 // UIS ADMIN
-import HomeAdmin from './ui/admin/home.jsx';
 import AgregarRecolector from './ui/admin/recolectores/AgregrarRecolector/Recolector.jsx';
 import ListarRecolectores from './ui/admin/recolectores/ListarRecolectores/listarRecolectores.jsx';
 import Reportes from './ui/admin/reportes/Reportes.jsx';

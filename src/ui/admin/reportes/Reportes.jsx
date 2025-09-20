@@ -88,7 +88,7 @@ const Reports = () => {
       }
     };
     fetchReportes();
-  }, [filters, pagination.current_page]);
+  }, [filters, pagination.current_page, pagination.per_page]);
 
   // Manejar cambio de filtros
   const handleFilterChange = (e) => {

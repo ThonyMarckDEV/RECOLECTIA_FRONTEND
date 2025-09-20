@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Bars3Icon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import jwtUtils from '../../utilities/jwtUtils';
 import { logout } from '../../js/logout';
@@ -9,7 +9,6 @@ const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [openSections, setOpenSections] = useState({});
   const [showConfirm, setShowConfirm] = useState(false);
-  const navigate = useNavigate();
 
   const refresh_token = jwtUtils.getRefreshTokenFromCookie();
   const rol = refresh_token ? jwtUtils.getUserRole(refresh_token) : null;
