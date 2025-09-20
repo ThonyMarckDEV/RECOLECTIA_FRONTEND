@@ -22,15 +22,13 @@ import HomeAdmin from './ui/admin/home.jsx';
 import AgregarRecolector from './ui/admin/recolectores/AgregrarRecolector/Recolector.jsx';
 import ListarRecolectores from './ui/admin/recolectores/ListarRecolectores/listarRecolectores.jsx';
 import Reportes from './ui/admin/reportes/Reportes.jsx';
+import Dashboard from './ui/admin/dashboard/Dashboard.jsx';
 
 // UIS Usuario
 import HomeUsuario from './ui/usuario/home.jsx';
 import Perfil from './ui/usuario/perfil/Perfil.jsx';
 import HacerReporte from './ui/usuario/reportes/HacerReporte/Report.jsx';
 import MisReportes from './ui/usuario/reportes/MisReportes/MisReportes.jsx';
-
-
-
 
 // UIS Recolector
 import HomeRecolector from './ui/recolector/home.jsx';
@@ -59,7 +57,7 @@ function AppContent() {
         }
       >
         {/* Ruta Home (cuando solo pones /admin) */}
-        <Route index element={<HomeAdmin />} />
+        <Route index element={<Dashboard />} />
 
         {/* Ruta para agregar recolectores */}
         <Route path="agregar-recolector" element={<AgregarRecolector />} />
@@ -67,8 +65,6 @@ function AppContent() {
         <Route path="listar-recolectores" element={<ListarRecolectores />} />
 
         <Route path="reportes" element={<Reportes />} />
-
-        {/* Aquí agregas más módulos */}
 
       </Route>
 
@@ -93,11 +89,6 @@ function AppContent() {
 
         {/* Ruta Mis Reportes */}
         <Route path="mis-reportes" element={<MisReportes />} />
-
-
-
-
-        {/* Aquí agregas más módulos */}
 
       </Route>
 
