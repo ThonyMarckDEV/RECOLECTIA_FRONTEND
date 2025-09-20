@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast } from 'react-toastify'; // Remove ToastContainer if moved to root
 import perfilService from './services/perfilService';
 import jwtUtils from '../../../utilities/jwtUtils';
 
 const Perfil = () => {
-  const [user, setUser] = useState({ name: '', perfil: '', recolectPoints: 0 });
+  const [user, setUser] = useState({ name: '', perfil: '', recolectPoints: 0, idZona: null });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -82,7 +81,7 @@ const Perfil = () => {
               </h2>
 
               {/* Puntos de Recolección */}
-              <div className="flex items-center justify-center space-x-2">
+              <div className="flex items-center justify-center space-x-2 mb-4">
                 <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
@@ -90,6 +89,11 @@ const Perfil = () => {
                   <span className="font-medium">{user.recolectPoints || 0}</span> Puntos de Recolección
                 </p>
               </div>
+
+              {/* Zona (if available) */}
+              <p className="text-sm text-gray-500">
+                Zona: {user.idZona ? `ID ${user.idZona}` : 'No asignada'}
+              </p>
             </div>
           )}
         </div>
@@ -97,39 +101,6 @@ const Perfil = () => {
 
       {/* Bottom Space for Mobile Navigation */}
       <div className="h-20 sm:h-8"></div>
-
-      {/* Toast Notifications - Minimalist Style */}
-      <ToastContainer
-        position="top-center"
-        autoClose={3000}
-        hideProgressBar
-        closeOnClick
-        pauseOnHover
-        draggable={false}
-        theme="light"
-        toastClassName="!bg-white !shadow-lg !border !border-gray-200 !rounded-xl !text-sm"
-        bodyClassName="!text-gray-700 !font-normal"
-        closeButton={false}
-      />
-
-      {/* Custom CSS for ultra minimal styling */}
-      <style jsx>{`
-        .Toastify__toast {
-          border-radius: 12px !important;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
-          border: 1px solid #e5e7eb !important;
-        }
-        .Toastify__toast--success {
-          background: #f0fdf4 !important;
-          color: #16a34a !important;
-          border-color: #bbf7d0 !important;
-        }
-        .Toastify__toast--error {
-          background: #fef2f2 !important;
-          color: #dc2626 !important;
-          border-color: #fecaca !important;
-        }
-      `}</style>
     </div>
   );
 };
