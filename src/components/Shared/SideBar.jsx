@@ -38,6 +38,14 @@ const Sidebar = () => {
           { name: 'Listar Recolectores', link: '/admin/listar-recolectores' },
         ],
       },
+      {
+        section: 'Zonas',
+        icon: '📍',
+        subs: [
+          { name: 'Agregar Zona', link: '/admin/agregar-zona' },
+          { name: 'Listar Zonas', link: '/admin/listar-zonas' },
+        ],
+      },
     ],
     usuario: [
       {

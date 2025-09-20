@@ -22,6 +22,8 @@ import AgregarRecolector from './ui/admin/recolectores/AgregrarRecolector/Recole
 import ListarRecolectores from './ui/admin/recolectores/ListarRecolectores/listarRecolectores.jsx';
 import Reportes from './ui/admin/reportes/Reportes.jsx';
 import Dashboard from './ui/admin/dashboard/Dashboard.jsx';
+import AgregarZona from './ui/admin/zonas/AgregarZona/Zona.jsx';
+import ListarZonas from './ui/admin/zonas/ListarZonas/listarZonas.jsx';
 
 // UIS Usuario
 import HomeUsuario from './ui/usuario/home.jsx';
@@ -62,8 +64,12 @@ function AppContent() {
         <Route path="agregar-recolector" element={<AgregarRecolector />} />
         {/* Ruta para listar recolectores */}
         <Route path="listar-recolectores" element={<ListarRecolectores />} />
-
+        {/* Ruta para ver reportes */}
         <Route path="reportes" element={<Reportes />} />
+        {/* Ruta para ver zonas */}
+        <Route path="agregar-zona" element={<AgregarZona />} />
+        {/* Ruta para listar zonas */}
+        <Route path="listar-zonas" element={<ListarZonas />} />
 
       </Route>
 
