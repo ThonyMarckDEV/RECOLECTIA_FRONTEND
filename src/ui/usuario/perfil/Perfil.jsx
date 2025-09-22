@@ -138,7 +138,7 @@ const Perfil = () => {
                   Zona Actual
                 </label>
                 <p className="text-sm text-gray-500">
-                  {user.zona ? `ID ${user.idZona} - ${user.zona.nombre} - ${user.zona.descripcion}` : 'No asignada'}
+                  {user.zona || 'No asignada'}
                 </p>
               </div>
 
