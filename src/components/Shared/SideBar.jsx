@@ -66,6 +66,11 @@ const Sidebar = () => {
           { name: 'Mis Reportes', link: '/usuario/mis-reportes' },
         ],
       },
+      {
+        section: 'Rutas',
+        icon: '📍',
+        link: '/usuario/rutas',
+      }
     ],
     recolector: [
       {

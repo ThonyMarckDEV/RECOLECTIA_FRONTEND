@@ -1,11 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import zonaService from '../../../../ui/admin/zonas/services/zonaService';
+import jwtUtils from '../../../../utilities/jwtUtils';
 
 const ZonaSelect = ({ value, onChange, disabled = false, name }) => {
   const [zonas, setZonas] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
+    // Obtener rol del JWT
+    const token = jwtUtils.getAccessTokenFromCookie();
+    if (token) {
+      try {
+        const rol = jwtUtils.getUserRole(token);
+        if (rol === 'admin') {
+          setIsAdmin(true);
+        }
+      } catch (err) {
+        console.error('Error decoding JWT:', err);
+      }
+    }
+
+    // Cargar zonas
     const fetchZonas = async () => {
       try {
         const response = await zonaService.listarZonas();
@@ -21,6 +37,7 @@ const ZonaSelect = ({ value, onChange, disabled = false, name }) => {
 
   // Helper function to truncate description
   const truncateDescription = (desc, maxLength = 50) => {
+    if (!desc) return '';
     if (desc.length <= maxLength) return desc;
     return `${desc.substring(0, maxLength)}...`;
   };
@@ -31,8 +48,7 @@ const ZonaSelect = ({ value, onChange, disabled = false, name }) => {
       value={value}
       onChange={onChange}
       disabled={disabled || loading}
-      className="w-full px-4 py-3 border border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500 bg-white text-sm md:max-w-md" // Added md:max-w-md for desktop constraint
-      style={{ overflow: 'hidden', textOverflow: 'ellipsis' }} // Inline styles for truncation
+      className="w-full px-4 py-3 border border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500 bg-white text-sm md:max-w-md"
       required
     >
       {loading ? (
@@ -44,9 +60,11 @@ const ZonaSelect = ({ value, onChange, disabled = false, name }) => {
             <option
               key={zona.id}
               value={zona.id}
-              title={`ID: ${zona.id} - ${zona.nombre} - ${zona.descripcion}`} // Full text as tooltip
+              title={`ID: ${zona.id} - ${zona.nombre}`} 
             >
-              ID: {zona.id} - {zona.nombre} - {truncateDescription(zona.descripcion)}
+              {isAdmin
+                ? `ID: ${zona.id} - ${zona.nombre} - ${truncateDescription(zona.descripcion)}`
+                : zona.nombre}
             </option>
           ))}
         </>
