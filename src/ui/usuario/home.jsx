@@ -8,6 +8,7 @@ import jwtUtils from '../../utilities/jwtUtils';
 import truckIconUrl from '../../assets/img/camion.png';
 import alertSound from '../../assets/sounds/alert.mp3';
 import { toast } from 'react-toastify';
+import { Volume2, VolumeX } from 'lucide-react'; // Assuming lucide-react is installed for icons
 
 // Fix Leaflet marker icon issue
 delete L.Icon.Default.prototype._getIconUrl;
@@ -79,6 +80,7 @@ const Home = () => {
   const [error, setError] = useState(null);
   const [userName, setUserName] = useState('');
   const [userProfilePic, setUserProfilePic] = useState(null); // Profile picture URL
+  const [isMuted, setIsMuted] = useState(false); // Mute state
   const positionRef = useRef(null);
   const audioRef = useRef(new Audio(alertSound));
   const navigate = useNavigate();
@@ -153,7 +155,7 @@ const Home = () => {
             latitude,
             longitude
           );
-          if (distance < 100) {
+          if (distance < 100 && !isMuted) {
             audioRef.current.play().catch((err) => console.error('Error playing sound:', err));
           }
         }
@@ -164,7 +166,7 @@ const Home = () => {
     fetchCollectorLocation();
     const intervalId = setInterval(fetchCollectorLocation, 1000);
     return () => clearInterval(intervalId);
-  }, []);
+  }, [isMuted]);
 
   // Create user icon based on profile picture
   const userIconInstance = createUserIcon(userProfilePic);
@@ -176,15 +178,28 @@ const Home = () => {
         <h1 className="text-base font-semibold text-gray-900">
           RECOLECT<span className="text-green-600">IA</span>
         </h1>
-        <div className="flex items-center space-x-2">
-          <div className="w-6 h-6 rounded-full bg-gray-200 overflow-hidden">
-            <img 
-              src={userProfilePic} 
-              alt="Usuario" 
-              className="w-full h-full object-cover"
-            />
+        <div className="flex items-center space-x-4">
+          <button
+            onClick={() => setIsMuted(!isMuted)}
+            className="text-gray-600 hover:text-gray-900 focus:outline-none"
+            aria-label={isMuted ? 'Desmutear alerta' : 'Mutear alerta'}
+          >
+            {isMuted ? (
+              <VolumeX className="w-5 h-5" />
+            ) : (
+              <Volume2 className="w-5 h-5" />
+            )}
+          </button>
+          <div className="flex items-center space-x-2">
+            <div className="w-6 h-6 rounded-full bg-gray-200 overflow-hidden">
+              <img 
+                src={userProfilePic} 
+                alt="Usuario" 
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <span className="text-xs text-gray-500 hidden sm:block">{userName}</span>
           </div>
-          <span className="text-xs text-gray-500 hidden sm:block">{userName}</span>
         </div>
       </header>
 
