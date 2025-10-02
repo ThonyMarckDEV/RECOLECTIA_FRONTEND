@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import zonaService from '../services/zonaService';
+import zonaService from 'services/zonaService';
 
 const Zona = () => {
   const [name, setName] = useState('');

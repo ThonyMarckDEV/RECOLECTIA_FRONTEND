@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import reportService from './services/reportService';
-import API_BASE_URL from '../../../js/urlHelper';
+import reportService from 'services/reportService';
+import API_BASE_URL from 'js/urlHelper';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';

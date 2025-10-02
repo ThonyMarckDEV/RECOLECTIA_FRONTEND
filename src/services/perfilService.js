@@ -1,5 +1,5 @@
-import { fetchWithAuth } from '../../../../js/authToken';
-import API_BASE_URL from '../../../../js/urlHelper';
+import { fetchWithAuth } from 'js/authToken';
+import API_BASE_URL from 'js/urlHelper';
 
 const getProfile = async () => {
   const response = await fetchWithAuth(`${API_BASE_URL}/api/user/profile`, {

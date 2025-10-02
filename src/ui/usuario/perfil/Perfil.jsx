@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
-import perfilService from './services/perfilService';
-import { refreshAccessToken } from '../../../js/authToken'; 
-import jwtUtils from '../../../utilities/jwtUtils';
-import ZonaSelect from '../../../components/Shared/Comboboxes/Zona/ZonaSelect'; 
+import perfilService from 'services/perfilService';
+import { refreshAccessToken } from 'js/authToken'; 
+import jwtUtils from 'utilities/jwtUtils';
+import ZonaSelect from 'components/Shared/Comboboxes/Zona/ZonaSelect'; 
 
 const Perfil = () => {
   const [user, setUser] = useState({ name: '', perfil: '', recolectPoints: 0, idZona: null, zona: null });

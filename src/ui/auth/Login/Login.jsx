@@ -3,11 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
-import jwtUtils from '../../../utilities/jwtUtils';
-import LoadingScreen from '../../../components/Shared/LoadingScreen';
+import jwtUtils from 'utilities/jwtUtils';
+import LoadingScreen from 'components/Shared/LoadingScreen';
 import LoginForm from './components/LoginForm';
 import authService from './services/authService';
-import loginimg from '../../../assets/img/login.jpg';
+import loginimg from 'assets/img/login.jpg';
 
 const Login = () => {
   const [loading, setLoading] = useState(false);

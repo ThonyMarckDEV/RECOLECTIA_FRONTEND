@@ -1,9 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Webcam from 'react-webcam';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import reportService from '../services/reportService';
-import jwtUtils from '../../../../utilities/jwtUtils';
+import reportService from 'services/reportService';
+import jwtUtils from 'utilities/jwtUtils';
 
 const Report = () => {
   const [photo, setPhoto] = useState(null);

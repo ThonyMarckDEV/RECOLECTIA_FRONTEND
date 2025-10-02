@@ -3,10 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
-import locationservice from '../recolector/services/locationservice';
-import jwtUtils from '../../utilities/jwtUtils';
-import truckIconUrl from '../../assets/img/camion.png';
-import alertSound from '../../assets/sounds/alert.mp3';
+import locationservice from 'services/locationservice';
+import jwtUtils from 'utilities/jwtUtils';
+import truckIconUrl from 'assets/img/camion.png';
+import alertSound from 'assets/sounds/alert.mp3';
 import { toast } from 'react-toastify';
 import { Volume2, VolumeX } from 'lucide-react'; // Assuming lucide-react is installed for icons
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import zonaService from '../../../../ui/admin/zonas/services/zonaService';
-import jwtUtils from '../../../../utilities/jwtUtils';
+import zonaService from 'services/zonaService';
+import jwtUtils from 'utilities/jwtUtils';
 
 const ZonaSelect = ({ value, onChange, disabled = false, name }) => {
   const [zonas, setZonas] = useState([]);

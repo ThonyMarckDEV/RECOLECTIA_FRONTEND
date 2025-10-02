@@ -36,10 +36,10 @@ import Rutas from './ui/usuario/rutas/Rutas.jsx';
 import HomeRecolector from './ui/recolector/home.jsx';
 
 // Utilities
-import ProtectedRouteHome from './utilities/ProtectedRouteHome';
-import ProtectedRouteUsuario from './utilities/ProtectedRouteUsuario.jsx';
-import ProtectedRouteAdmin from './utilities/ProtectedRouteAdmin.jsx';
-import ProtectedRouteRecolector from './utilities/ProtectedRouteRecolector.jsx';
+import ProtectedRouteHome from './utilities/protectedRoutes/ProtectedRouteHome';
+import ProtectedRouteUsuario from './utilities/protectedRoutes/ProtectedRouteUsuario.jsx';
+import ProtectedRouteAdmin from './utilities/protectedRoutes/ProtectedRouteAdmin.jsx';
+import ProtectedRouteRecolector from './utilities/protectedRoutes/ProtectedRouteRecolector.jsx';
 
 
 function AppContent() {

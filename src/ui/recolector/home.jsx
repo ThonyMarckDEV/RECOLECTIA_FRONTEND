@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
-import locationservice from './services/locationservice';
-import jwtUtils from '../../utilities/jwtUtils';
-import truckIconUrl from '../../assets/img/camion.png';
+import locationservice from 'services/locationservice';
+import jwtUtils from 'utilities/jwtUtils';
+import truckIconUrl from 'assets/img/camion.png';
 
 // Fix Leaflet marker icon issue and set default marker fallback
 delete L.Icon.Default.prototype._getIconUrl;
