@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { toast } from 'react-toastify';
 import perfilService from 'services/perfilService';
 import { refreshAccessToken } from 'js/authToken'; 
 import jwtUtils from 'utilities/jwtUtils';
 import ZonaSelect from 'components/Shared/Comboboxes/Zona/ZonaSelect'; 
+import AlertMessage from 'components/Shared/Error/AlertMessage';
+import { toast } from 'react-toastify';
 
 const Perfil = () => {
   const [user, setUser] = useState({ name: '', perfil: '', recolectPoints: 0, idZona: null, zona: null });
@@ -11,6 +12,8 @@ const Perfil = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSavingZona, setIsSavingZona] = useState(false);
   const [error, setError] = useState(null);
+
+  const [alert, setAlert] = useState(null); // Un solo estado, inicializado en null.
 
   // Obtener datos del perfil
   useEffect(() => {
@@ -29,8 +32,7 @@ const Perfil = () => {
         setError(null);
       } catch (err) {
         console.error('Error fetching profile:', err);
-        setError(err.message || 'Error al cargar el perfil');
-        toast.error(err.message || 'Error al cargar el perfil');
+        setAlert(err);
       } finally {
         setIsLoading(false);
       }
@@ -58,7 +60,7 @@ const Perfil = () => {
 
     setIsSavingZona(true);
     try {
-      await perfilService.updateZona(selectedZona);
+      const result = await perfilService.updateZona(selectedZona);
       // Refrescar access token
       const newToken = await refreshAccessToken();
       jwtUtils.setAccessTokenInCookie(newToken);
@@ -66,10 +68,10 @@ const Perfil = () => {
       const response = await perfilService.getProfile();
       setUser(response.data);
       setSelectedZona(response.data.idZona);
-      toast.success('Zona actualizada exitosamente');
+      setAlert(result);
     } catch (err) {
       console.error('Error updating zona:', err);
-      toast.error('Error al actualizar la zona');
+      setAlert(err);
     } finally {
       setIsSavingZona(false);
     }
@@ -94,6 +96,13 @@ const Perfil = () => {
               {error}
             </div>
           )}
+
+           <AlertMessage
+            type={alert?.type}
+            message={alert?.message}
+            details={alert?.details}
+            onClose={() => setAlert(null)}
+          />
 
           {/* Loading State */}
           {isLoading && (

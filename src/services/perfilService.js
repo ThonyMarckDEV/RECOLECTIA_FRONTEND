@@ -1,5 +1,6 @@
 import { fetchWithAuth } from 'js/authToken';
 import API_BASE_URL from 'js/urlHelper';
+import { handleResponse } from 'utilities/responses/handleResponse';
 
 const getProfile = async () => {
   const response = await fetchWithAuth(`${API_BASE_URL}/api/user/profile`, {
@@ -8,14 +9,7 @@ const getProfile = async () => {
       'Content-Type': 'application/json',
     },
   });
-
-  const result = await response.json();
-
-  if (!response.ok) {
-    throw new Error(result.message || 'Error al obtener el perfil');
-  }
-
-  return result;
+  return handleResponse(response);
 };
 
 const updateZona = async (idZona) => {
@@ -26,14 +20,7 @@ const updateZona = async (idZona) => {
     },
     body: JSON.stringify({ idZona }),
   });
-
-  const result = await response.json();
-
-  if (!response.ok) {
-    throw new Error(result.message || 'Error al actualizar la zona');
-  }
-
-  return result;
+  return handleResponse(response);
 };
 
 const perfilService = {

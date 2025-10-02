@@ -34,12 +34,12 @@ const Recolector = () => {
                 parseInt(estado),
                 parseInt(idZona)
             );
-            // Simplemente pasas el objeto de respuesta completo
+
             setAlert(result);
             resetForm();
         } catch (err) {
             console.error('Error creating recolector:', err);
-            // Simplemente pasas el objeto de error completo
+
             setAlert(err);
         } finally {
             setIsLoading(false);
