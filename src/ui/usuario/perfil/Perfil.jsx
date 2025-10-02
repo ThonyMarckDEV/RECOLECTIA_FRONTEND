@@ -97,7 +97,7 @@ const Perfil = () => {
             </div>
           )}
 
-           <AlertMessage
+          <AlertMessage
             type={alert?.type}
             message={alert?.message}
             details={alert?.details}

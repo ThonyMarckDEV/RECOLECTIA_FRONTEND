@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import reportService from 'services/reportService';
 import jwtUtils from 'utilities/jwtUtils';
+import AlertMessage from 'components/Shared/Error/AlertMessage';
 
 const Report = () => {
   const [photo, setPhoto] = useState(null);
@@ -13,6 +14,8 @@ const Report = () => {
   const [location, setLocation] = useState({ latitude: null, longitude: null });
   const webcamRef = useRef(null);
 
+  const [alert, setAlert] = useState(null); // Un solo estado, inicializado en null.
+  
   // Handle camera errors
   const handleCameraError = (err) => {
     console.error('Error accessing camera:', err);
@@ -90,14 +93,14 @@ const Report = () => {
         throw new Error('No se pudo obtener el ID del usuario.');
       }
 
-      await reportService.createReport(
+      const result = await reportService.createReport(
         photo,
         description,
         userId,
         location.latitude,
         location.longitude
       );
-      toast.success('Reporte enviado exitosamente');
+      setAlert(result);
       setPhoto(null);
       setDescription('');
       setError(null); // Limpiar cualquier error previo
@@ -105,7 +108,7 @@ const Report = () => {
       console.error('Error submitting report:', err);
       const errorMessage = err.response?.data?.message || err.message || 'Error al enviar el reporte';
       setError(errorMessage);
-      toast.error(errorMessage);
+      setAlert(err);
     } finally {
       setIsLoading(false);
     }
@@ -130,6 +133,13 @@ const Report = () => {
               {error}
             </div>
           )}
+
+          <AlertMessage
+            type={alert?.type}
+            message={alert?.message}
+            details={alert?.details}
+            onClose={() => setAlert(null)}
+          />
 
           {/* Camera Preview o Photo Preview */}
           {!photo ? (
