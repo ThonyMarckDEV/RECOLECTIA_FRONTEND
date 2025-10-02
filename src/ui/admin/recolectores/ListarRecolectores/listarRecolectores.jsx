@@ -69,12 +69,12 @@ const ListarRecolectores = () => {
                 parseInt(editForm.estado),
                 parseInt(editForm.idZona)
             );
-            setAlert({ type: 'success', message: result.message });
+            setAlert({ type: 'success', message: result }); 
             await fetchRecolectores(); // Refresca la lista para mostrar datos actualizados
             cancelEditing();
         } catch (err) {
             console.error('Error updating recolector:', err);
-            setAlert({ type: 'error', message: err.message || 'Error al actualizar el recolector' });
+            setAlert({ type: 'error', message: err }); 
         } finally {
             setIsLoading(false);
         }
