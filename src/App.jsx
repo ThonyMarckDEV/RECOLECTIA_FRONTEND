@@ -31,6 +31,7 @@ import Perfil from './ui/usuario/perfil/Perfil.jsx';
 import HacerReporte from './ui/usuario/reportes/HacerReporte/Report.jsx';
 import MisReportes from './ui/usuario/reportes/MisReportes/MisReportes.jsx';
 import Rutas from './ui/usuario/rutas/Rutas.jsx';
+import PerCapita from 'ui/usuario/perCapita/PerCapita';
 
 // UIS Recolector
 import HomeRecolector from './ui/recolector/home.jsx';
@@ -40,6 +41,7 @@ import ProtectedRouteHome from './utilities/protectedRoutes/ProtectedRouteHome';
 import ProtectedRouteUsuario from './utilities/protectedRoutes/ProtectedRouteUsuario.jsx';
 import ProtectedRouteAdmin from './utilities/protectedRoutes/ProtectedRouteAdmin.jsx';
 import ProtectedRouteRecolector from './utilities/protectedRoutes/ProtectedRouteRecolector.jsx';
+
 
 
 function AppContent() {
@@ -98,6 +100,9 @@ function AppContent() {
 
         {/* Ruta Rutas */}
         <Route path="rutas" element={<Rutas />} />
+
+        {/* Ruta per Capita */}
+        <Route path="per-capita" element={<PerCapita />} />
 
       </Route>
 
