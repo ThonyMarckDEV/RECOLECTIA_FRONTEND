@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import perCapitaService from 'services/perCapitaService';
 import AlertMessage from 'components/Shared/Error/AlertMessage';
-import Pagination from './components/Pagination'; // O la ruta correcta a tu componente Pagination
+import Pagination from './components/Pagination';
 
 const ListarPerCapitas = () => {
     const [records, setRecords] = useState([]);
-    const [summary, setSummary] = useState(null); // Iniciar en null para evitar renderizado inicial
+    const [summary, setSummary] = useState(null); 
     const [isLoading, setIsLoading] = useState(true);
     const [alert, setAlert] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
@@ -59,7 +59,7 @@ const ListarPerCapitas = () => {
                         onClose={() => setAlert(null)}
                     />
 
-                    {/* El resumen solo se muestra si no está cargando y hay datos */}
+  
                     {!isLoading && summary && (
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
                             <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm text-center">
@@ -79,7 +79,7 @@ const ListarPerCapitas = () => {
 
                     <h2 className="text-lg font-semibold text-gray-800 mb-3">Historial</h2>
                     
-                    {/* --- AQUÍ ESTÁ EL LOADER ANIMADO CORREGIDO --- */}
+
                     {isLoading ? (
                         <div className="flex items-center justify-center h-64">
                             <div className="text-center">
