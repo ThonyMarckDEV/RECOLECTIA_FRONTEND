@@ -10,9 +10,9 @@ const Recolector = () => {
     const [estado, setEstado] = useState('1');
     const [idZona, setIdZona] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    // El estado de la alerta ya está bien definido para esto
-    const [alert, setAlert] = useState({ type: '', message: null });
 
+   const [alert, setAlert] = useState(null); // Un solo estado, inicializado en null.
+  
     const resetForm = () => {
         setUsername('');
         setName('');
@@ -35,12 +35,12 @@ const Recolector = () => {
                 parseInt(idZona)
             );
             // Simplemente pasas el objeto de respuesta completo
-            setAlert({ type: 'success', message: result }); 
+            setAlert(result);
             resetForm();
         } catch (err) {
             console.error('Error creating recolector:', err);
             // Simplemente pasas el objeto de error completo
-            setAlert({ type: 'error', message: err }); 
+            setAlert(err);
         } finally {
             setIsLoading(false);
         }
@@ -59,9 +59,10 @@ const Recolector = () => {
                 <div className="max-w-2xl mx-auto">
                     {/* El componente de Alerta ya está listo para recibir el arreglo de mensajes */}
                     <AlertMessage
-                        type={alert.type}
-                        message={alert.message}
-                        onClose={() => setAlert({ type: '', message: null })}
+                      type={alert?.type}
+                      message={alert?.message}
+                      details={alert?.details}
+                      onClose={() => setAlert(null)}
                     />
 
                     <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
