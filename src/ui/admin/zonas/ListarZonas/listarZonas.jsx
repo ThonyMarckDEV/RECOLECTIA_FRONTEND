@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import zonaService from 'services/zonaService';
+import AlertMessage from 'components/Shared/Error/AlertMessage';
 
 const ListarZonas = () => {
   const [zonas, setZonas] = useState([]);
@@ -9,6 +8,8 @@ const ListarZonas = () => {
   const [error, setError] = useState(null);
   const [editingId, setEditingId] = useState(null);
   const [editForm, setEditForm] = useState({ name: '', description: '' });
+
+  const [alert, setAlert] = useState(null); // Un solo estado, inicializado en null.
 
   // Obtener zonas
   useEffect(() => {
@@ -20,8 +21,7 @@ const ListarZonas = () => {
         setError(null);
       } catch (err) {
         console.error('Error fetching zonas:', err);
-        setError(err.message || 'Error al cargar las zonas');
-        toast.error(err.message || 'Error al cargar las zonas');
+        setAlert(err);
       } finally {
         setIsLoading(false);
       }
@@ -56,12 +56,12 @@ const ListarZonas = () => {
     setIsLoading(true);
     setError(null);
     try {
-      await zonaService.updateZona(
+      const result = await zonaService.updateZona(
         id,
         editForm.name,
         editForm.description
       );
-      toast.success('Zona actualizada exitosamente');
+      setAlert(result);
       setZonas((prev) =>
         prev.map((zona) =>
           zona.id === id ? { ...zona, nombre: editForm.name, descripcion: editForm.description } : zona
@@ -70,8 +70,7 @@ const ListarZonas = () => {
       cancelEditing();
     } catch (err) {
       console.error('Error updating zona:', err);
-      setError(err.message || 'Error al actualizar la zona');
-      toast.error(err.message || 'Error al actualizar la zona');
+      setAlert(err);
     } finally {
       setIsLoading(false);
     }
@@ -95,6 +94,15 @@ const ListarZonas = () => {
               {error}
             </div>
           )}
+
+          {/* 4. Usamos el componente AlertMessage para mostrar todos los mensajes */}
+          <AlertMessage
+            type={alert?.type}
+            message={alert?.message}
+            details={alert?.details}
+            onClose={() => setAlert(null)}
+          />
+          
           {/* Loading State */}
           {isLoading && (
             <div className="flex items-center justify-center h-64">
@@ -104,6 +112,7 @@ const ListarZonas = () => {
               </div>
             </div>
           )}
+
           {/* Zonas List */}
           {!isLoading && zonas.length === 0 && !error && (
             <div className="text-center p-6 bg-white rounded-xl shadow-sm border border-gray-200">
