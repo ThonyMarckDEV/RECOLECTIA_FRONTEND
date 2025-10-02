@@ -6,21 +6,15 @@ const PerCapita = () => {
     const [weight, setWeight] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [alert, setAlert] = useState(null);
-    const [canSubmit, setCanSubmit] = useState(false); // Controla si el usuario puede enviar hoy
-    const [isChecking, setIsChecking] = useState(true); // Muestra un loader al inicio
+    const [canSubmit, setCanSubmit] = useState(false);
+    const [isChecking, setIsChecking] = useState(true);
 
-    // Al cargar el componente, verifica si el usuario ya registró hoy
     useEffect(() => {
         const checkStatus = async () => {
             try {
-                // 'response' ahora será el objeto { can_submit: true }
                 const response = await perCapitaService.checkTodayRecord();
-                
-                // Leemos la propiedad directamente
                 setCanSubmit(response.can_submit);
-
             } catch (err) {
-                // Creamos un objeto de alerta estándar para mostrar el error
                 setAlert({
                     type: 'error',
                     message: 'No se pudo verificar el estado del registro.',
@@ -43,7 +37,7 @@ const PerCapita = () => {
             const result = await perCapitaService.createRecord(parseFloat(weight));
             setAlert(result);
             setWeight('');
-            setCanSubmit(false); // Ya no puede volver a enviar hoy
+            setCanSubmit(false);
         } catch (err) {
             setAlert(err);
         } finally {
@@ -51,8 +45,16 @@ const PerCapita = () => {
         }
     };
 
+    // --- CAMBIO AQUÍ: Se reemplaza el texto por el loader animado ---
     if (isChecking) {
-        return <div className="text-center p-10">Verificando estado...</div>;
+        return (
+            <div className="flex items-center justify-center min-h-screen bg-gray-50">
+                <div className="text-center">
+                    <div className="w-8 h-8 mx-auto border-4 border-gray-200 border-t-green-500 rounded-full animate-spin"></div>
+                    <p className="mt-3 text-sm text-gray-500">Verificando estado...</p>
+                </div>
+            </div>
+        );
     }
 
     return (

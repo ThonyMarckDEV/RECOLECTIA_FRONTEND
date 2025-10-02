@@ -67,18 +67,18 @@ const Sidebar = () => {
         ],
       },
       {
+        section: 'Per Capita',
+        icon: '⚖️',
+        subs: [
+          { name: 'Hacer Registro', link: '/usuario/registro-per-capita' },
+          { name: 'Mis Registros', link: '/usuario/listar-per-capitas' },
+        ],
+      },
+      {
         section: 'Rutas',
         icon: '📍',
         link: '/usuario/rutas',
       },
-      {
-        section: 'Per Capita',
-        icon: '⚖️',
-        subs: [
-          { name: 'Hacer Registro', link: '/usuario/per-capita' },
-          { name: 'Mis Registros', link: '/usuario/mis-registros' },
-        ],
-      }
     ],
     recolector: [
       {

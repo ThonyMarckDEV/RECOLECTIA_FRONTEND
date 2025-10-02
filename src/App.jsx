@@ -10,37 +10,38 @@ import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
 
 // Layout
-import SidebarLayout from "./layouts/SidebarLayout.jsx";
+import SidebarLayout from "layouts/SidebarLayout.jsx";
 
 // UIS AUTH
-import ErrorPage404 from './components/ErrorPage404.jsx';
-import ErrorPage401 from './components/ErrorPage401';
-import Login from './ui/auth/Login/Login.jsx';
+import ErrorPage404 from 'components/ErrorPage404.jsx';
+import ErrorPage401 from 'components/ErrorPage401';
+import Login from 'ui/auth/Login/Login.jsx';
 
 // UIS ADMIN
 import AgregarRecolector from './ui/admin/recolectores/AgregrarRecolector/Recolector.jsx';
 import ListarRecolectores from './ui/admin/recolectores/ListarRecolectores/listarRecolectores.jsx';
-import Reportes from './ui/admin/reportes/Reportes.jsx';
-import Dashboard from './ui/admin/dashboard/Dashboard.jsx';
-import AgregarZona from './ui/admin/zonas/AgregarZona/Zona.jsx';
-import ListarZonas from './ui/admin/zonas/ListarZonas/listarZonas.jsx';
+import Reportes from 'ui/admin/reportes/Reportes.jsx';
+import Dashboard from 'ui/admin/dashboard/Dashboard.jsx';
+import AgregarZona from 'ui/admin/zonas/AgregarZona/Zona.jsx';
+import ListarZonas from 'ui/admin/zonas/ListarZonas/listarZonas.jsx';
 
 // UIS Usuario
-import HomeUsuario from './ui/usuario/home.jsx';
-import Perfil from './ui/usuario/perfil/Perfil.jsx';
-import HacerReporte from './ui/usuario/reportes/HacerReporte/Report.jsx';
-import MisReportes from './ui/usuario/reportes/MisReportes/MisReportes.jsx';
-import Rutas from './ui/usuario/rutas/Rutas.jsx';
-import PerCapita from 'ui/usuario/perCapita/PerCapita';
+import HomeUsuario from 'ui/usuario/home.jsx';
+import Perfil from 'ui/usuario/perfil/Perfil.jsx';
+import HacerReporte from 'ui/usuario/reportes/HacerReporte/Report.jsx';
+import MisReportes from 'ui/usuario/reportes/MisReportes/MisReportes.jsx';
+import Rutas from 'ui/usuario/rutas/Rutas.jsx';
+import CrearPerCapita from 'ui/usuario/perCapita/CrearPerCapita/PerCapita';
+import ListarPerCapitas from 'ui/usuario/perCapita/MisRegistrosPerCapita/ListarPerCapitas';
 
 // UIS Recolector
-import HomeRecolector from './ui/recolector/home.jsx';
+import HomeRecolector from 'ui/recolector/home.jsx';
 
 // Utilities
-import ProtectedRouteHome from './utilities/protectedRoutes/ProtectedRouteHome';
-import ProtectedRouteUsuario from './utilities/protectedRoutes/ProtectedRouteUsuario.jsx';
-import ProtectedRouteAdmin from './utilities/protectedRoutes/ProtectedRouteAdmin.jsx';
-import ProtectedRouteRecolector from './utilities/protectedRoutes/ProtectedRouteRecolector.jsx';
+import ProtectedRouteHome from 'utilities/protectedRoutes/ProtectedRouteHome';
+import ProtectedRouteUsuario from 'utilities/protectedRoutes/ProtectedRouteUsuario.jsx';
+import ProtectedRouteAdmin from 'utilities/protectedRoutes/ProtectedRouteAdmin.jsx';
+import ProtectedRouteRecolector from 'utilities/protectedRoutes/ProtectedRouteRecolector.jsx';
 
 
 
@@ -101,8 +102,11 @@ function AppContent() {
         {/* Ruta Rutas */}
         <Route path="rutas" element={<Rutas />} />
 
-        {/* Ruta per Capita */}
-        <Route path="per-capita" element={<PerCapita />} />
+        {/* Ruta crear per Capita */}
+        <Route path="registro-per-capita" element={<CrearPerCapita />} />
+
+        {/* Ruta listar registro per Capitas */}
+        <Route path="listar-per-capitas" element={<ListarPerCapitas />} />
 
       </Route>
 

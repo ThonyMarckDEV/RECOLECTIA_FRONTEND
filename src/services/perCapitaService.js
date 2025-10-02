@@ -25,9 +25,17 @@ const createRecord = async (weight_kg) => {
     return handleResponse(response);
 };
 
+const getMyRecords = async (page = 1) => {
+    // Añadimos el parámetro 'page' a la URL
+    const response = await fetchWithAuth(`${API_BASE_URL}/api/perCapita/myrecords?page=${page}`);
+    return handleResponse(response);
+};
+
+
 const perCapitaService = {
     checkTodayRecord,
     createRecord,
+    getMyRecords
 };
 
 export default perCapitaService;

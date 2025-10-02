@@ -6,7 +6,7 @@ export const handleResponse = async (response) => {
     const result = await response.json();
 
     if (!response.ok) {
-        // ERROR: Crea y lanza nuestro objeto de error estándar.
+        // La lógica de error ya está bien, no necesita cambios.
         const error = {
             type: 'error',
             message: result.message || 'Ocurrió un error inesperado.',
@@ -20,6 +20,8 @@ export const handleResponse = async (response) => {
         type: 'success',
         message: result.message || 'Operación realizada con éxito.',
         data: result.data,
+        pagination: result.pagination,
+        summary: result.summary, // <-- ¡AÑADE ESTA LÍNEA!
     };
     return success;
 };
