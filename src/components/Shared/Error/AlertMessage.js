@@ -1,7 +1,21 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 const AlertMessage = ({ type, message, details, onClose }) => {
-    // Si no hay mensaje, no se muestra nada.
+    
+    // 🚀 INICIO DEL HOOK: LLAMADA INCONDICIONAL 🚀
+    useEffect(() => {
+        // Solo ejecutamos el temporizador si se proporcionó la función onClose
+        if (onClose && message) { // 💡 Verificamos "message" aquí dentro de la lógica del efecto
+            const timer = setTimeout(() => {
+                onClose();
+            }, 3000);
+
+            return () => clearTimeout(timer);
+        }
+    }, [onClose, message]); 
+    // ---------------------------------------------
+    
+    // Si no hay mensaje, no se muestra nada (retorno condicional)
     if (!message) {
         return null;
     }
@@ -17,7 +31,7 @@ const AlertMessage = ({ type, message, details, onClose }) => {
             <div className="flex justify-between items-start">
                 <div className="flex-grow">
                     {/* Muestra el mensaje principal */}
-                    <p className={details ? 'font-semibold' : ''}>{message}</p>
+                    <p className={details && details.length > 0 ? 'font-semibold' : ''}>{message}</p>
                     
                     {/* Si hay detalles (errores de validación), los muestra como una lista */}
                     {details && details.length > 0 && (
