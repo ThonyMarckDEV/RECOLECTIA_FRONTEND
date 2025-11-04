@@ -222,7 +222,7 @@ const Reports = () => {
                     {/* Imagen */}
                     <div className="w-full sm:w-1/3 h-40 rounded-lg overflow-hidden">
                       <img
-                        src={`${API_BASE_URL}${reporte.image_url}`}
+                        src={`${reporte.image_url}`}
                         alt="Reporte"
                         className="w-full h-full object-cover"
                         onError={(e) => (e.target.src = 'https://via.placeholder.com/150')}
