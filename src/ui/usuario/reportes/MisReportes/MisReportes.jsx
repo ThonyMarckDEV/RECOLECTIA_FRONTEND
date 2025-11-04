@@ -215,7 +215,7 @@ const MisReportes = () => {
                     <Popup closeButton={false} className="minimal-popup">
                       <div className="text-center">
                         <img
-                          src={`${API_BASE_URL}${reporte.image_url}`}
+                          src={`${MINIO_API_BASE_URL}${reporte.image_url}`}
                           alt="Reporte"
                           className="w-32 h-32 object-cover rounded-lg mb-2"
                           onError={(e) => (e.target.src = 'https://via.placeholder.com/150')}
