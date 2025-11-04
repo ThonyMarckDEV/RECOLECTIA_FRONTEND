@@ -6,7 +6,7 @@ import API_BASE_URL from '../js/urlHelper';
 import LoadingScreen from '../components/Shared/LoadingScreen.jsx';
 
 export async function logout() {
-  // Crear contenedor temporal para LoadingScreen
+
   const container = document.createElement('div');
   document.body.appendChild(container);
   const root = createRoot(container);
