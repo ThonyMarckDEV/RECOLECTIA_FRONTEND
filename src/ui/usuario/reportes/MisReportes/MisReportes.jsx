@@ -3,7 +3,7 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import reportService from 'services/reportService';
 import jwtUtils from 'utilities/jwtUtils';
-import API_BASE_URL from 'js/urlHelper';
+import MINIO_API_BASE_URL from 'js/urlMinioHelper';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
@@ -158,7 +158,7 @@ const MisReportes = () => {
                       {/* Imagen */}
                       <div className="w-full sm:w-1/3 h-40 rounded-lg overflow-hidden">
                         <img
-                          src={`${API_BASE_URL}${reporte.image_url}`}
+                          src={`${MINIO_API_BASE_URL}${reporte.image_url}`}
                           alt="Reporte"
                           className="w-full h-full object-cover"
                           onError={(e) => (e.target.src = 'https://via.placeholder.com/150')}
